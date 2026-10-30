@@ -39,11 +39,10 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-[var(--m)] py-5 transition-colors duration-300 ${
-          variant === "solid"
+        className={`fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-[var(--m)] py-5 transition-colors duration-300 ${variant === "solid"
             ? "bg-wall/90 backdrop-blur-md border-b border-pl text-tx"
             : "text-white"
-        }`}
+          }`}
       >
         <Link
           href="/"
@@ -57,33 +56,20 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
               fill
               priority
               sizes="(max-width: 768px) 100px, 140px"
-              className={`object-contain transition-opacity duration-300 ${
-                variant === "solid" ? "filter brightness-0 dark:invert" : ""
-              }`}
+              className={`object-contain transition-opacity duration-300 ${variant === "solid" ? "filter brightness-0 dark:invert" : ""
+                }`}
             />
           </div>
         </Link>
 
-        {/* Action icons / Menu button */}
+        {/* Menu button */}
         <div className="flex items-center gap-4">
-          <Link
-            href="/admin"
-            className={`hidden sm:inline-flex items-center text-xs tracking-widest uppercase py-2 px-3.5 border transition-all duration-300 ${
-              variant === "solid"
-                ? "border-tx/20 hover:border-tx text-tx hover:bg-tx hover:text-wall"
-                : "border-white/30 hover:border-white text-white hover:bg-white/10"
-            }`}
-          >
-            {t("admin")}
-          </Link>
-
           <button
             onClick={() => setIsOpen(true)}
-            className={`w-12 h-12 rounded-full grid place-content-center transition-all duration-300 focus-visible:outline-2 ${
-              variant === "solid"
+            className={`w-12 h-12 rounded-full grid place-content-center transition-all duration-300 focus-visible:outline-2 ${variant === "solid"
                 ? "border border-tx/30 bg-tx/5 text-tx hover:bg-tx/10"
                 : "border border-white/30 bg-black/30 backdrop-blur-md text-white hover:bg-black/50"
-            }`}
+              }`}
             aria-label={t("menu")}
             aria-expanded={isOpen}
           >
@@ -97,11 +83,10 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
 
       {/* Fullscreen Overlay Menu */}
       <nav
-        className={`fixed inset-0 z-50 bg-black text-white flex flex-col justify-between p-[var(--m)] pt-[calc(env(safe-area-inset-top,0px)+100px)] transition-all duration-700 ease-artemis ${
-          isOpen
+        className={`fixed inset-0 z-50 bg-black text-white flex flex-col justify-between p-[var(--m)] pt-[calc(env(safe-area-inset-top,0px)+100px)] transition-all duration-700 ease-artemis ${isOpen
             ? "opacity-100 pointer-events-auto visible translate-y-0"
             : "opacity-0 pointer-events-none invisible -translate-y-6"
-        }`}
+          }`}
         aria-label={t("menu")}
         aria-hidden={!isOpen}
       >
@@ -142,15 +127,6 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
               {t("visit")}
             </Link>
           </li>
-          <li>
-            <Link
-              href="/admin"
-              onClick={() => setIsOpen(false)}
-              className="font-newsreader italic text-[clamp(1.8rem,4vw,3rem)] text-or2 hover:text-white transition-colors block mt-6"
-            >
-              → {t("admin")} (Gestion de la galerie)
-            </Link>
-          </li>
         </ul>
 
         {/* Bottom footer: Language & Socials */}
@@ -158,11 +134,10 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
           <div className="flex items-center gap-2" role="group" aria-label="Langue">
             <button
               onClick={() => setLang("fr")}
-              className={`py-1.5 px-3 transition-colors ${
-                lang === "fr"
+              className={`py-1.5 px-3 transition-colors ${lang === "fr"
                   ? "text-white border-b-2 border-or font-semibold"
                   : "text-white/50 hover:text-white"
-              }`}
+                }`}
               aria-pressed={lang === "fr"}
             >
               FR
@@ -170,11 +145,10 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
             <span className="text-white/20">|</span>
             <button
               onClick={() => setLang("en")}
-              className={`py-1.5 px-3 transition-colors ${
-                lang === "en"
+              className={`py-1.5 px-3 transition-colors ${lang === "en"
                   ? "text-white border-b-2 border-or font-semibold"
                   : "text-white/50 hover:text-white"
-              }`}
+                }`}
               aria-pressed={lang === "en"}
             >
               EN
