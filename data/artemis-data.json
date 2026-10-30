@@ -1,0 +1,274 @@
+{
+  "artists": [
+    {
+      "id": "artist-laka",
+      "slug": "laka",
+      "name": "LAKA",
+      "nationality": "Togolaise",
+      "city": "Lomé",
+      "birthYear": 1988,
+      "bio": {
+        "fr": "Artiste peintre et plasticien contemporain togolais, LAKA explore la mémoire des formes, la terre féconde et la transmission des savoirs à travers des matières texturées et une gestuelle puissante.",
+        "en": "Contemporary Togolese painter and visual artist, LAKA explores the memory of forms, fertile earth, and the transmission of knowledge through rich textures and powerful gestures."
+      },
+      "avatarUrl": "/artworks/laka/terre-feconde.jpeg",
+      "statement": {
+        "fr": "La matière est vivante ; chaque touche de couleur est un souffle de la terre.",
+        "en": "Matter is alive; each brushstroke is a breath of the earth."
+      },
+      "featured": true,
+      "order": 1
+    },
+    {
+      "id": "artist-agbelessessi",
+      "slug": "agbelessessi-dela",
+      "name": "AGBELESSESSI Dela",
+      "nationality": "Togolaise",
+      "city": "Lomé",
+      "birthYear": 1985,
+      "bio": {
+        "fr": "Artiste plasticien togolais de renom, AGBELESSESSI Dela interroge la condition humaine, les symboles contemporains et l'harmonie des écritures à travers des portraits saisissants et des compositions calligraphiques.",
+        "en": "Renowned Togolese visual artist, AGBELESSESSI Dela questions human condition, contemporary symbols, and calligraphic harmony through striking portraits and intricate compositions."
+      },
+      "avatarUrl": "/artworks/agbelessessi/portrait-2019.jpeg",
+      "statement": {
+        "fr": "L'harmonie naît du dialogue silencieux entre les chiffres, les lettres et le regard humain.",
+        "en": "Harmony arises from the quiet dialogue between numbers, letters, and the human gaze."
+      },
+      "featured": true,
+      "order": 2
+    }
+  ],
+  "artworks": [
+    {
+      "id": "laka-terre-feconde",
+      "slug": "terre-feconde",
+      "artistId": "artist-laka",
+      "title": {
+        "fr": "Terre Féconde",
+        "en": "Fertile Ground"
+      },
+      "year": 2024,
+      "medium": {
+        "fr": "Technique mixte sur toile",
+        "en": "Mixed media on canvas"
+      },
+      "dimensions": "60 × 56 cm",
+      "price": 450000,
+      "status": "disponible",
+      "type": "peinture",
+      "image": "/artworks/laka/terre-feconde.jpeg",
+      "detailImages": [],
+      "aspectRatio": 0.9515,
+      "description": {
+        "fr": "Une œuvre tellurique magistrale où la matière granuleuse et les tonalités ocres et vibrantes évoquent la matrice nourricière et le renouveau perpétuel.",
+        "en": "A masterly telluric work where granular matter and vibrant ochre tones evoke the nurturing matrix and perpetual renewal."
+      },
+      "featuredInHero": true,
+      "order": 1
+    },
+    {
+      "id": "laka-tendresse-expansive-2",
+      "slug": "tendresse-expansive-2",
+      "artistId": "artist-laka",
+      "title": {
+        "fr": "Tendresse expansive (2)",
+        "en": "Expansive Tenderness (2)"
+      },
+      "year": 2024,
+      "medium": {
+        "fr": "Technique mixte sur toile",
+        "en": "Mixed media on canvas"
+      },
+      "dimensions": "100 × 100 cm",
+      "price": 450000,
+      "status": "disponible",
+      "type": "peinture",
+      "image": "/artworks/laka/tendresse-expansive-2.jpeg",
+      "detailImages": [
+        "/artworks/laka/tendresse-expansive-1.jpeg"
+      ],
+      "aspectRatio": 0.993,
+      "description": {
+        "fr": "Grand format carré immersif où les nuances se déploient avec une douceur magnétique. Un dialogue subtil entre tension géométrique et abandon poétique.",
+        "en": "A large immersive square canvas where tones unfold with magnetic softness. A subtle dialogue between geometric tension and poetic surrender."
+      },
+      "featuredInHero": true,
+      "order": 2
+    },
+    {
+      "id": "laka-tendresse-expansive-1",
+      "slug": "tendresse-expansive-1",
+      "artistId": "artist-laka",
+      "title": {
+        "fr": "Tendresse expansive (1)",
+        "en": "Expansive Tenderness (1)"
+      },
+      "year": 2024,
+      "medium": {
+        "fr": "Technique mixte sur toile",
+        "en": "Mixed media on canvas"
+      },
+      "dimensions": "60 × 60 cm",
+      "price": 450000,
+      "status": "disponible",
+      "type": "peinture",
+      "image": "/artworks/laka/tendresse-expansive-1.jpeg",
+      "detailImages": [],
+      "aspectRatio": 1.0,
+      "description": {
+        "fr": "Variation intimiste de la série Tendresse Expansive. La texture dense capture la lumière pour révéler une profondeur émotionnelle singulière.",
+        "en": "Intimate variation of the Expansive Tenderness series. The dense texture catches light to reveal a unique emotional resonance."
+      },
+      "featuredInHero": false,
+      "order": 3
+    },
+    {
+      "id": "laka-transmission-de-la-connaissance-2",
+      "slug": "transmission-de-la-connaissance-2",
+      "artistId": "artist-laka",
+      "title": {
+        "fr": "Transmission de la connaissance (2)",
+        "en": "Transmission of Knowledge (2)"
+      },
+      "year": 2024,
+      "medium": {
+        "fr": "Technique mixte sur toile",
+        "en": "Mixed media on canvas"
+      },
+      "dimensions": "53 × 55 cm",
+      "price": 400000,
+      "status": "disponible",
+      "type": "peinture",
+      "image": "/artworks/laka/transmission-de-la-connaissance-2.jpeg",
+      "detailImages": [
+        "/artworks/laka/transmission-de-la-connaissance-1.jpeg"
+      ],
+      "aspectRatio": 0.966,
+      "description": {
+        "fr": "Cette composition symbolique traduit le passage des savoirs immémoriaux d'une génération à l'autre. Le rythme visuel suggère un langage secret.",
+        "en": "This symbolic composition translates the passage of ancestral knowledge between generations. The visual rhythm conveys an unspoken dialogue."
+      },
+      "featuredInHero": false,
+      "order": 4
+    },
+    {
+      "id": "laka-transmission-de-la-connaissance-1",
+      "slug": "transmission-de-la-connaissance-1",
+      "artistId": "artist-laka",
+      "title": {
+        "fr": "Transmission de la connaissance (1)",
+        "en": "Transmission of Knowledge (1)"
+      },
+      "year": 2024,
+      "medium": {
+        "fr": "Technique mixte sur toile",
+        "en": "Mixed media on canvas"
+      },
+      "dimensions": "53 × 50 cm",
+      "price": 400000,
+      "status": "disponible",
+      "type": "peinture",
+      "image": "/artworks/laka/transmission-de-la-connaissance-1.jpeg",
+      "detailImages": [],
+      "aspectRatio": 0.941,
+      "description": {
+        "fr": "Premier volet du dyptique sur la transmission des savoirs. Une œuvre vibrante où l'équilibre des formes invite à la contemplation attentive.",
+        "en": "First chapter of the diptych on knowledge transmission. A vibrant work whose balanced forms invite mindful contemplation."
+      },
+      "featuredInHero": false,
+      "order": 5
+    },
+    {
+      "id": "agbelessessi-portrait-2019",
+      "slug": "portrait-2019",
+      "artistId": "artist-agbelessessi",
+      "title": {
+        "fr": "Portrait 2019",
+        "en": "Portrait 2019"
+      },
+      "year": 2019,
+      "medium": {
+        "fr": "Technique mixte sur toile",
+        "en": "Mixed media on canvas"
+      },
+      "dimensions": "86 cm × 63 cm",
+      "price": 150000,
+      "status": "disponible",
+      "type": "peinture",
+      "image": "/artworks/agbelessessi/portrait-2019.jpeg",
+      "detailImages": [],
+      "aspectRatio": 0.7315,
+      "description": {
+        "fr": "Portrait expressionniste saisissant d'AGBELESSESSI Dela. Le regard intense et la puissance plastique des traits capturent l'esprit d'une époque.",
+        "en": "Striking expressionist portrait by AGBELESSESSI Dela. The intense gaze and sculptural power of lines capture the spirit of an era."
+      },
+      "featuredInHero": true,
+      "order": 6
+    },
+    {
+      "id": "agbelessessi-chiffres-et-lettres-harmonie",
+      "slug": "chiffres-et-lettres-harmonie",
+      "artistId": "artist-agbelessessi",
+      "title": {
+        "fr": "Chiffres et lettres ( Harmonie)",
+        "en": "Numbers and Letters (Harmony)"
+      },
+      "year": 2020,
+      "medium": {
+        "fr": "Technique mixte sur toile",
+        "en": "Mixed media on canvas"
+      },
+      "dimensions": "85.5 cm × 62.5 cm",
+      "price": 150000,
+      "status": "disponible",
+      "type": "peinture",
+      "image": "/artworks/agbelessessi/chiffres-et-lettres-harmonie.jpeg",
+      "detailImages": [],
+      "aspectRatio": 0.7268,
+      "description": {
+        "fr": "Une exploration fascinante du signe graphique où chiffres et lettres s'entrelacent pour composer une symphonie visuelle contemporaine.",
+        "en": "A fascinating exploration of graphic signs where numbers and letters intertwine to compose a contemporary visual symphony."
+      },
+      "featuredInHero": false,
+      "order": 7
+    }
+  ],
+  "galleryConfig": {
+    "phone": "+228 70 21 11 11",
+    "whatsapp": "22870211111",
+    "email": "galerieartemis@gmail.com",
+    "address": {
+      "fr": "Forever, non loin de l’ex LCF, Rue de Kpendjal, Lomé, Togo",
+      "en": "Forever, near former LCF, Kpendjal Street, Lomé, Togo"
+    },
+    "hours": {
+      "fr": [
+        ["Lun.", "Fermé"],
+        ["Mar.", "10:00–19:00"],
+        ["Mer.", "10:00–19:00"],
+        ["Jeu.", "10:00–19:00"],
+        ["Ven.", "10:00–19:00"],
+        ["Sam.", "10:00–19:00"],
+        ["Dim.", "14:00–19:00"]
+      ],
+      "en": [
+        ["Mon.", "Closed"],
+        ["Tue.", "10:00–19:00"],
+        ["Wed.", "10:00–19:00"],
+        ["Thu.", "10:00–19:00"],
+        ["Fri.", "10:00–19:00"],
+        ["Sat.", "10:00–19:00"],
+        ["Sun.", "14:00–19:00"]
+      ]
+    },
+    "socials": {
+      "instagram": "https://www.instagram.com/artemisgalerietg/",
+      "facebook": "https://www.facebook.com/p/Artemis-Galerie-61569428815346/",
+      "tiktok": "https://www.tiktok.com/@artemis.galerie"
+    },
+    "locationUrl": "https://maps.app.goo.gl/XiqSTBWZrN7b4yDK7",
+    "mapEmbedUrl": "https://maps.google.com/maps?q=6.1628644,1.2293956&z=16&output=embed"
+  }
+}
+

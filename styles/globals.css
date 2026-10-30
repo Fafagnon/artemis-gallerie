@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --m: clamp(24px, 7.3vw, 100px);
+  --wall: #ffffff;
+  --pl: #F0F0EE;
+  --tx: #000000;
+  --gr: #5F5F5B;
+  --or: #BC9133;
+  --or2: #D3BF82;
+  --e: cubic-bezier(0.22, 1, 0.36, 1);
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] {
+  --wall: #000000;
+  --pl: #141414;
+  --tx: #ffffff;
+  --gr: #A5A5A0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --wall: #000000;
+    --pl: #141414;
+    --tx: #ffffff;
+    --gr: #A5A5A0;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+
+body {
+  margin: 0;
+  background: var(--wall);
+  color: var(--tx);
+  font-family: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+em {
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-style: italic;
+}
+
+/* Accessible focus ring */
+:focus-visible {
+  outline: 2px solid var(--tx);
+  outline-offset: 3px;
+}
+
+/* Masonry Columns for Wall */
+.artemis-wall {
+  column-count: 2;
+  column-gap: calc(var(--m) * 0.8);
+}
+
+@media (max-width: 820px) {
+  .artemis-wall {
+    column-count: 1;
+  }
+}
+
+.artemis-wall figure {
+  break-inside: avoid;
+  margin-bottom: clamp(56px, 8vw, 120px);
+  transition: opacity 0.4s ease;
+}
+
+@media (min-width: 821px) {
+  .artemis-wall figure:nth-child(even) {
+    margin-left: auto;
+  }
+}
+
+@media (hover: hover) {
+  .artemis-wall:hover figure {
+    opacity: 0.45;
+  }
+  .artemis-wall figure:hover {
+    opacity: 1;
+  }
+}
+
+/* Marquee continuous scroll */
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-ticker {
+  display: flex;
+  width: max-content;
+  animation: ticker 38s linear infinite;
+}
+
+.animate-ticker:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ticker {
+    animation: none;
+  }
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Custom Scrollbar for admin and lightboxes */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--pl);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--gr);
+}
+
