@@ -40,19 +40,26 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 flex items-start justify-between px-[var(--m)] py-4 sm:py-5 transition-all duration-300 pointer-events-none ${isSolidHeader
-            ? "bg-wall/90 backdrop-blur-md border-b border-pl text-tx"
-            : "text-white"
-          }`}
+        className={`fixed top-0 left-0 right-0 z-40 flex items-start justify-between px-[var(--m)] transition-all duration-300 pointer-events-none ${
+          isSolidHeader
+            ? "bg-wall/90 backdrop-blur-md border-b border-pl text-tx py-3 sm:py-3.5 shadow-sm"
+            : "text-white py-5 sm:py-6"
+        }`}
       >
-        {/* Brand / Logo - High fidelity, generous size (3-4x original tiny box) */}
+        {/* Brand / Logo - Grand when at top, smoothly compact when scrolled down */}
         <Link
           href="/"
-          className="relative block w-[clamp(110px,13vw,165px)] group focus-visible:outline-white pointer-events-auto"
+          className={`relative block transition-all duration-300 ease-artemis group focus-visible:outline-white pointer-events-auto ${
+            isSolidHeader
+              ? "w-10 sm:w-12"
+              : "w-[clamp(110px,13vw,165px)]"
+          }`}
           aria-label="Artemis Galerie"
         >
-          {/* Subtle ambient glow behind logo */}
-          <div className="absolute -inset-4 bg-radial from-black/40 via-black/15 to-transparent rounded-full blur-md pointer-events-none -z-10" />
+          {/* Subtle ambient glow only when large at top */}
+          {!isSolidHeader && (
+            <div className="absolute -inset-4 bg-radial from-black/40 via-black/15 to-transparent rounded-full blur-md pointer-events-none -z-10" />
+          )}
           <div className="relative w-full aspect-[148/220] filter drop-shadow-md">
             <Image
               src="/logo.png"
@@ -65,21 +72,23 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
           </div>
         </Link>
 
-        {/* Right side actions: Quick FR/EN Switcher + Menu button */}
-        <div className="flex items-center gap-3 sm:gap-4 pointer-events-auto">
+        {/* Right side actions: Direct FR/EN Switcher (ONLY one on the site) + Menu button */}
+        <div className="flex items-center gap-3 sm:gap-4 pointer-events-auto mt-0.5">
           {/* Direct Language Switcher */}
           <div
-            className={`flex items-center text-xs font-semibold tracking-wider rounded-full px-3 py-1.5 border transition-all ${isSolidHeader
+            className={`flex items-center text-xs font-semibold tracking-wider rounded-full px-3 py-1.5 border transition-all ${
+              isSolidHeader
                 ? "bg-pl/80 border-tx/15 text-tx"
                 : "bg-black/35 backdrop-blur-md border-white/25 text-white"
-              }`}
+            }`}
             role="group"
             aria-label="Changer de langue"
           >
             <button
               onClick={() => switchLanguage("fr")}
-              className={`px-1.5 py-0.5 rounded transition-colors ${lang === "fr" ? "text-or font-bold" : "opacity-60 hover:opacity-100"
-                }`}
+              className={`px-1.5 py-0.5 rounded transition-colors ${
+                lang === "fr" ? "text-or font-bold" : "opacity-60 hover:opacity-100"
+              }`}
               aria-pressed={lang === "fr"}
             >
               FR
@@ -87,8 +96,9 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
             <span className="opacity-30 mx-0.5">/</span>
             <button
               onClick={() => switchLanguage("en")}
-              className={`px-1.5 py-0.5 rounded transition-colors ${lang === "en" ? "text-or font-bold" : "opacity-60 hover:opacity-100"
-                }`}
+              className={`px-1.5 py-0.5 rounded transition-colors ${
+                lang === "en" ? "text-or font-bold" : "opacity-60 hover:opacity-100"
+              }`}
               aria-pressed={lang === "en"}
             >
               EN
@@ -98,18 +108,20 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
           {/* Menu button */}
           <button
             onClick={() => setIsOpen(true)}
-            className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full grid place-content-center transition-all duration-300 focus-visible:outline-2 ${isSolidHeader
+            className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full grid place-content-center transition-all duration-300 focus-visible:outline-2 ${
+              isSolidHeader
                 ? "border border-tx/25 bg-tx/5 text-tx hover:bg-tx/10"
                 : "border border-white/30 bg-black/30 backdrop-blur-md text-white hover:bg-black/50"
-              }`}
+            }`}
             aria-label={t("menu")}
             aria-expanded={isOpen}
           >
-            <div className="flex flex-col gap-1.5 items-end w-5">
-              <span className={`h-0.5 w-5 ${isSolidHeader ? "bg-tx" : "bg-white"}`} />
+            <div className="flex flex-col gap-1.5 items-end w-4 sm:w-5">
+              <span className={`h-0.5 w-4 sm:w-5 ${isSolidHeader ? "bg-tx" : "bg-white"}`} />
               <span
-                className={`h-0.5 w-3.5 transition-all group-hover:w-5 ${isSolidHeader ? "bg-tx" : "bg-white"
-                  }`}
+                className={`h-0.5 w-3 sm:w-3.5 transition-all group-hover:w-4 sm:group-hover:w-5 ${
+                  isSolidHeader ? "bg-tx" : "bg-white"
+                }`}
               />
             </div>
           </button>
@@ -118,23 +130,24 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
 
       {/* Fullscreen Overlay Menu */}
       <nav
-        className={`fixed inset-0 z-50 bg-black text-white flex flex-col justify-between p-[var(--m)] pt-[calc(env(safe-area-inset-top,0px)+100px)] transition-all duration-700 ease-artemis ${isOpen
+        className={`fixed inset-0 z-50 bg-black text-white flex flex-col justify-between p-[var(--m)] pt-[calc(env(safe-area-inset-top,0px)+90px)] transition-all duration-700 ease-artemis ${
+          isOpen
             ? "opacity-100 pointer-events-auto visible translate-y-0"
             : "opacity-0 pointer-events-none invisible -translate-y-6"
-          }`}
+        }`}
         aria-label={t("menu")}
         aria-hidden={!isOpen}
       >
         <button
           onClick={() => setIsOpen(false)}
-          className="absolute top-7 right-[var(--m)] w-12 h-12 rounded-full border border-white/35 bg-black/40 text-white grid place-content-center hover:bg-white/10 transition-colors"
+          className="absolute top-6 right-[var(--m)] w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-white/35 bg-black/40 text-white grid place-content-center hover:bg-white/10 transition-colors"
           aria-label={t("close")}
         >
           <X className="w-5 h-5" />
         </button>
 
-        {/* Navigation list */}
-        <ul className="space-y-4 md:space-y-6 my-auto">
+        {/* Navigation list (without Contact & Acquisitions as requested) */}
+        <ul className="space-y-5 md:space-y-7 my-auto">
           <li>
             <Link
               href="/"
@@ -164,15 +177,6 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
           </li>
           <li>
             <Link
-              href="/#contact"
-              onClick={() => setIsOpen(false)}
-              className="font-archivo font-extrabold text-[clamp(2.5rem,7vw,5.5rem)] leading-none hover:text-or2 transition-colors block"
-            >
-              {lang === "fr" ? "Contact & Acquisitions" : "Contact & Inquiries"}
-            </Link>
-          </li>
-          <li>
-            <Link
               href="/#visite"
               onClick={() => setIsOpen(false)}
               className="font-archivo font-extrabold text-[clamp(2.5rem,7vw,5.5rem)] leading-none hover:text-or2 transition-colors block"
@@ -182,58 +186,32 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
           </li>
         </ul>
 
-        {/* Bottom footer: Language & Socials */}
-        <div className="flex flex-wrap items-center justify-between gap-6 pt-6 border-t border-white/15 text-sm">
-          <div className="flex items-center gap-2" role="group" aria-label="Langue">
-            <button
-              onClick={() => switchLanguage("fr")}
-              className={`py-1.5 px-3 transition-colors ${lang === "fr"
-                  ? "text-white border-b-2 border-or font-semibold"
-                  : "text-white/50 hover:text-white"
-                }`}
-              aria-pressed={lang === "fr"}
-            >
-              FR
-            </button>
-            <span className="text-white/20">|</span>
-            <button
-              onClick={() => switchLanguage("en")}
-              className={`py-1.5 px-3 transition-colors ${lang === "en"
-                  ? "text-white border-b-2 border-or font-semibold"
-                  : "text-white/50 hover:text-white"
-                }`}
-              aria-pressed={lang === "en"}
-            >
-              EN
-            </button>
-          </div>
-
-          <div className="flex items-center gap-6 text-white/70 text-xs uppercase tracking-wider">
-            <a
-              href="https://www.instagram.com/artemisgalerietg/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-or2 transition-colors"
-            >
-              Instagram
-            </a>
-            <a
-              href="https://www.facebook.com/p/Artemis-Galerie-61569428815346/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-or2 transition-colors"
-            >
-              Facebook
-            </a>
-            <a
-              href="https://www.tiktok.com/@artemis.galerie"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-or2 transition-colors"
-            >
-              TikTok
-            </a>
-          </div>
+        {/* Drawer footer: Socials only (duplicate language switcher removed) */}
+        <div className="flex items-center justify-end gap-6 pt-6 border-t border-white/15 text-xs uppercase tracking-wider text-white/70">
+          <a
+            href="https://www.instagram.com/artemisgalerietg/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-or2 transition-colors"
+          >
+            Instagram
+          </a>
+          <a
+            href="https://www.facebook.com/p/Artemis-Galerie-61569428815346/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-or2 transition-colors"
+          >
+            Facebook
+          </a>
+          <a
+            href="https://www.tiktok.com/@artemis.galerie"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-or2 transition-colors"
+          >
+            TikTok
+          </a>
         </div>
       </nav>
     </>

@@ -74,7 +74,7 @@ export function ArtworkCard({ artwork, artist, priority = false }: ArtworkCardPr
         </div>
 
         <div className="text-xs md:text-sm text-gr tracking-normal mt-1">
-          {artwork.year} • {medium} • {artwork.dimensions}
+          {medium} • {artwork.dimensions}
         </div>
 
         <div className="flex flex-wrap items-center gap-3 mt-3 text-sm">

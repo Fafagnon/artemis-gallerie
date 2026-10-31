@@ -47,10 +47,7 @@ export function ArtistsSpotlight({ artists, artworks }: ArtistsSpotlightProps) {
               className="group border border-pl p-6 lg:p-8 bg-pl/20 hover:bg-pl/50 transition-all duration-300 flex flex-col justify-between"
             >
               <div>
-                <div className="flex items-center justify-between gap-4 mb-4">
-                  <span className="text-xs font-semibold tracking-widest uppercase text-or">
-                    {artist.nationality} • {artist.city || "Lomé"}
-                  </span>
+                <div className="flex items-center justify-end mb-3">
                   <span className="text-xs text-gr">
                     {artistWorks.length} {t("worksExhibited").toLowerCase()}
                   </span>

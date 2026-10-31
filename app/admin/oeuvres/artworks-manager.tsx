@@ -137,7 +137,7 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
       const payload = {
         title: { fr: formData.titleFr, en: formData.titleEn || formData.titleFr },
         artistId: formData.artistId,
-        year: Number(formData.year),
+        year: Number(formData.year) || new Date().getFullYear(),
         medium: { fr: formData.mediumFr, en: formData.mediumEn || formData.mediumFr },
         dimensions: formData.dimensions,
         price: Number(formData.price),
@@ -311,7 +311,7 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
 
                     <td className="py-4 px-6 text-xs text-zinc-400">
                       <div>{work.dimensions}</div>
-                      <div>{work.medium.fr} ({work.year})</div>
+                      <div>{work.medium.fr}</div>
                     </td>
 
                     <td className="py-4 px-6 font-bold text-white">
@@ -452,8 +452,8 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
                 </div>
               </div>
 
-              {/* Dimensions, Price, Year */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* Dimensions & Price */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5 font-semibold">
                     Dimensions *
@@ -479,18 +479,6 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
                     placeholder="450000"
                     className="w-full bg-zinc-800 border border-zinc-700 px-3.5 py-2.5 rounded text-white focus:outline-none focus:border-or"
                     required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5 font-semibold">
-                    Année
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.year}
-                    onChange={(e) => setFormData({ ...formData, year: Number(e.target.value) })}
-                    className="w-full bg-zinc-800 border border-zinc-700 px-3.5 py-2.5 rounded text-white focus:outline-none focus:border-or"
                   />
                 </div>
               </div>

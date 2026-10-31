@@ -117,11 +117,10 @@ export function ArtworkDetailClient({
                   <button
                     key={idx}
                     onClick={() => setSelectedImage(img)}
-                    className={`relative w-20 h-20 overflow-hidden border-2 transition-all ${
-                      selectedImage === img
+                    className={`relative w-20 h-20 overflow-hidden border-2 transition-all ${selectedImage === img
                         ? "border-tx scale-105"
                         : "border-transparent opacity-70 hover:opacity-100"
-                    }`}
+                      }`}
                   >
                     <Image
                       src={img}
@@ -157,7 +156,7 @@ export function ArtworkDetailClient({
 
               <div className="text-sm text-gr space-y-1 mt-4">
                 <p>
-                  {artwork.type.charAt(0).toUpperCase() + artwork.type.slice(1)}, {artwork.year}
+                  {artwork.type.charAt(0).toUpperCase() + artwork.type.slice(1)}
                 </p>
                 <p>{medium}</p>
                 <p>{artwork.dimensions}</p>
