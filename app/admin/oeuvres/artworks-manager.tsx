@@ -561,20 +561,6 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
                 )}
               </div>
 
-              {/* Featured in Hero checkbox */}
-              <div className="flex items-center gap-3 pt-2">
-                <input
-                  type="checkbox"
-                  id="featuredInHero"
-                  checked={formData.featuredInHero}
-                  onChange={(e) => setFormData({ ...formData, featuredInHero: e.target.checked })}
-                  className="w-4 h-4 accent-or rounded cursor-pointer"
-                />
-                <label htmlFor="featuredInHero" className="text-sm text-zinc-300 cursor-pointer">
-                  Mettre en avant dans le diaporama Hero de la page d'accueil
-                </label>
-              </div>
-
               {/* Curatorial description */}
               <div>
                 <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5 font-semibold">
