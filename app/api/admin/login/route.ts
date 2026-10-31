@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  ADMIN_COOKIE_NAME,
-  createSessionToken,
-  getAdminSecret,
-  verifyAdminPassword,
-} from "@/lib/auth";
+import { ADMIN_COOKIE_NAME, createSessionToken, getAdminSecret } from "@/lib/auth";
+import { verifyEnteredPassword } from "@/lib/admin-password";
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +14,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!verifyAdminPassword(password)) {
+    const isValid = await verifyEnteredPassword(password);
+    if (!isValid) {
       return NextResponse.json(
         { error: "Mot de passe incorrect. Veuillez réessayer." },
         { status: 401 }
@@ -53,4 +50,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

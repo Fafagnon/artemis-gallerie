@@ -81,3 +81,15 @@ CREATE POLICY "Public can view artwork images" ON storage.objects FOR SELECT USI
 CREATE POLICY "Public can upload artwork images" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'artworks');
 CREATE POLICY "Public can update artwork images" ON storage.objects FOR UPDATE USING (bucket_id = 'artworks');
 CREATE POLICY "Public can delete artwork images" ON storage.objects FOR DELETE USING (bucket_id = 'artworks');
+
+
+-- 6. Table des paramètres d'administration (Mot de passe du back-office)
+CREATE TABLE IF NOT EXISTS admin_settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE admin_settings ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all on admin_settings" ON admin_settings;
+CREATE POLICY "Allow all on admin_settings" ON admin_settings FOR ALL USING (true) WITH CHECK (true);

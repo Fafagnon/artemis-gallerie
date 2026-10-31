@@ -1,13 +1,21 @@
 /**
  * Authentication and Session Management for Galerie Artemis Admin Back-Office
  * 
- * Uses Web Crypto API (HMAC-SHA256) for zero-dependency Edge & Node compatibility.
+ * Uses Web Crypto API (HMAC-SHA256 & PBKDF2) for zero-dependency Edge & Node compatibility.
  */
 
 export const ADMIN_COOKIE_NAME = "artemis_admin_session";
 const SESSION_MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 
 const encoder = new TextEncoder();
+
+function hexToBytes(hex: string): Uint8Array {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < bytes.length; i++) {
+    bytes[i] = parseInt(hex.substring(i * 2, i * 2 + 2), 16);
+  }
+  return bytes;
+}
 
 /**
  * Returns the configured admin password or secret key.
@@ -102,11 +110,60 @@ export async function verifySessionToken(
 }
 
 /**
- * Validates the raw password entered by the user
+ * Hashes a password using standard PBKDF2 with 100,000 iterations and 16-byte salt
+ */
+export async function hashPassword(password: string, saltHex?: string): Promise<string> {
+  const salt = saltHex ? hexToBytes(saltHex) : crypto.getRandomValues(new Uint8Array(16));
+  const passwordKey = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"]
+  );
+  const derivedKey = await crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      salt: salt as any,
+      iterations: 100000,
+      hash: "SHA-256",
+    },
+    passwordKey,
+    256
+  );
+  const saltHexStr = Array.from(salt)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  const hashHexStr = Array.from(new Uint8Array(derivedKey))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return `${saltHexStr}:${hashHexStr}`;
+}
+
+/**
+ * Verifies a password against a stored PBKDF2 hash
+ */
+export async function verifyPasswordAgainstHash(
+  password: string,
+  storedHash: string
+): Promise<boolean> {
+  if (!password || !storedHash) return false;
+  const [saltHex, hashHex] = storedHash.split(":");
+  if (!saltHex || !hashHex) return false;
+  try {
+    const computed = await hashPassword(password, saltHex);
+    const computedHashHex = computed.split(":")[1];
+    return hashHex === computedHashHex;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Validates the raw password entered against static secret
  */
 export function verifyAdminPassword(password: string): boolean {
   if (!password || typeof password !== "string") return false;
   const secret = getAdminSecret();
   return password.trim() === secret.trim();
 }
-

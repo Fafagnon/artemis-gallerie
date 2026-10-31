@@ -3,7 +3,15 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Palette, Users, Globe, ExternalLink, LogOut } from "lucide-react";
+import {
+  LayoutDashboard,
+  Palette,
+  Users,
+  Globe,
+  ExternalLink,
+  LogOut,
+  KeyRound,
+} from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -19,6 +27,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
     { href: "/admin/oeuvres", label: "Œuvres & Tableaux", icon: Palette },
     { href: "/admin/artistes", label: "Artistes", icon: Users },
+    { href: "/admin/securite", label: "Sécurité", icon: KeyRound },
   ];
 
   const handleLogout = async () => {
