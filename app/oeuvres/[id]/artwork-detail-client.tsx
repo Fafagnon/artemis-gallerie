@@ -118,8 +118,8 @@ export function ArtworkDetailClient({
                     key={idx}
                     onClick={() => setSelectedImage(img)}
                     className={`relative w-20 h-20 overflow-hidden border-2 transition-all ${selectedImage === img
-                        ? "border-tx scale-105"
-                        : "border-transparent opacity-70 hover:opacity-100"
+                      ? "border-tx scale-105"
+                      : "border-transparent opacity-70 hover:opacity-100"
                       }`}
                   >
                     <Image

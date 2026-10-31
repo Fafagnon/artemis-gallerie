@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Artwork, Artist, ArtworkStatus, ArtworkType } from "@/types/artemis";
 import { formatPrice } from "@/lib/utils";
 import { Plus, Edit2, Trash2, CheckCircle2, Upload, AlertCircle, X, Search } from "lucide-react";
+import { ConfirmModal } from "@/components/admin/confirm-modal";
 
 interface ArtworksManagerProps {
   initialArtworks: Artwork[];
@@ -15,6 +16,8 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
   const [artworks, setArtworks] = useState<Artwork[]>(initialArtworks);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingArtwork, setEditingArtwork] = useState<Artwork | null>(null);
+  const [artworkToDelete, setArtworkToDelete] = useState<{ id: string; title: string } | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [search, setSearch] = useState("");
@@ -186,20 +189,22 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
     }
   };
 
-  const handleDelete = async (id: string, title: string) => {
-    if (!confirm(`Supprimer définitivement l'œuvre « ${title} » ?`)) return;
-
+  const handleConfirmDelete = async () => {
+    if (!artworkToDelete) return;
+    setDeleting(true);
     try {
-      const res = await fetch(`/api/artworks?id=${encodeURIComponent(id)}`, {
+      const res = await fetch(`/api/artworks?id=${encodeURIComponent(artworkToDelete.id)}`, {
         method: "DELETE",
       });
 
       if (res.ok) {
-        setArtworks((prev) => prev.filter((w) => w.id !== id));
+        setArtworks((prev) => prev.filter((w) => w.id !== artworkToDelete.id));
+        setArtworkToDelete(null);
       }
     } catch (err) {
       console.error(err);
-      alert("Erreur lors de la suppression");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -326,10 +331,10 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
                             handleStatusChange(work.id, e.target.value as ArtworkStatus)
                           }
                           className={`text-xs font-semibold px-2 py-1 rounded border focus:outline-none cursor-pointer ${work.status === "disponible"
-                              ? "bg-emerald-950/60 border-emerald-800 text-emerald-400"
-                              : work.status === "reserve"
-                                ? "bg-amber-950/60 border-amber-800 text-amber-400"
-                                : "bg-zinc-800 border-zinc-700 text-zinc-400"
+                            ? "bg-emerald-950/60 border-emerald-800 text-emerald-400"
+                            : work.status === "reserve"
+                              ? "bg-amber-950/60 border-amber-800 text-amber-400"
+                              : "bg-zinc-800 border-zinc-700 text-zinc-400"
                             }`}
                         >
                           <option value="disponible">Disponible</option>
@@ -349,7 +354,7 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleDelete(work.id, work.title.fr)}
+                          onClick={() => setArtworkToDelete({ id: work.id, title: work.title.fr })}
                           className="p-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-red-400 transition-colors"
                           title="Supprimer"
                         >
@@ -605,6 +610,21 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
           </div>
         </div>
       )}
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={!!artworkToDelete}
+        title="Supprimer l'œuvre"
+        message={
+          artworkToDelete
+            ? `Confirmez-vous la suppression définitive de l'œuvre « ${artworkToDelete.title} » ?`
+            : ""
+        }
+        confirmLabel="Supprimer"
+        cancelLabel="Annuler"
+        loading={deleting}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setArtworkToDelete(null)}
+      />
     </div>
   );
 }

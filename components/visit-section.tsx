@@ -192,7 +192,7 @@ export function VisitSection({ config }: VisitSectionProps) {
         </div>
 
         {/* Right Column: Gallery Address, Hours, Map & Contacts */}
-        <div className="lg:col-span-6 space-y-8">
+        <div className="lg:col-span-6 space-y-6">
           <div>
             <span className="text-xs uppercase tracking-widest text-gr block mb-1 font-semibold">
               {lang === "fr" ? "Galerie d'art contemporain" : "Contemporary Art Gallery"}
@@ -202,7 +202,7 @@ export function VisitSection({ config }: VisitSectionProps) {
             </address>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-4 border-t border-tx/10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-tx/10">
             {/* Hours */}
             <div>
               <div className="flex items-center gap-2 mb-3 text-xs tracking-widest uppercase font-semibold text-gr">
@@ -253,8 +253,20 @@ export function VisitSection({ config }: VisitSectionProps) {
             </div>
           </div>
 
-          {/* Map and Socials */}
-          <div className="pt-4 border-t border-tx/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* Interactive Google Map Embed */}
+          <div className="overflow-hidden rounded-sm border border-tx/15 shadow-sm aspect-[16/8] w-full bg-wall">
+            <iframe
+              src={config.mapEmbedUrl}
+              title="Carte interactive Google Maps de la Galerie Artemis à Lomé"
+              className="w-full h-full border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          </div>
+
+          {/* Map Link and Socials */}
+          <div className="pt-2 border-t border-tx/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <a
               href={config.locationUrl}
               target="_blank"

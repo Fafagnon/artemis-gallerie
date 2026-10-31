@@ -14,6 +14,7 @@ import {
   Inbox,
   Search,
 } from "lucide-react";
+import { ConfirmModal } from "@/components/admin/confirm-modal";
 
 interface MessagesManagerProps {
   initialMessages: ContactMessage[];
@@ -24,6 +25,8 @@ export function MessagesManager({ initialMessages }: MessagesManagerProps) {
   const [filter, setFilter] = useState<"all" | "unread" | "read">("all");
   const [search, setSearch] = useState("");
   const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
+  const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const unreadCount = messages.filter((m) => m.status === "unread").length;
 
@@ -46,18 +49,22 @@ export function MessagesManager({ initialMessages }: MessagesManagerProps) {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Voulez-vous supprimer définitivement ce message ?")) return;
+  const handleConfirmDelete = async () => {
+    if (!messageToDelete) return;
+    setDeleting(true);
     try {
-      await fetch(`/api/contact?id=${encodeURIComponent(id)}`, {
+      await fetch(`/api/contact?id=${encodeURIComponent(messageToDelete)}`, {
         method: "DELETE",
       });
-      setMessages((prev) => prev.filter((m) => m.id !== id));
-      if (selectedMessage?.id === id) {
+      setMessages((prev) => prev.filter((m) => m.id !== messageToDelete));
+      if (selectedMessage?.id === messageToDelete) {
         setSelectedMessage(null);
       }
+      setMessageToDelete(null);
     } catch (err) {
       console.error(err);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -275,7 +282,7 @@ export function MessagesManager({ initialMessages }: MessagesManagerProps) {
                     </button>
 
                     <button
-                      onClick={() => handleDelete(msg.id)}
+                      onClick={() => setMessageToDelete(msg.id)}
                       className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-colors"
                       title="Supprimer le message"
                     >
@@ -299,6 +306,17 @@ export function MessagesManager({ initialMessages }: MessagesManagerProps) {
           })}
         </div>
       )}
+      {/* Custom Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={!!messageToDelete}
+        title="Supprimer le message"
+        message="Confirmez-vous la suppression définitive de ce message ?"
+        confirmLabel="Supprimer"
+        cancelLabel="Annuler"
+        loading={deleting}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setMessageToDelete(null)}
+      />
     </div>
   );
 }

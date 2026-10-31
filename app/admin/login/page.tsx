@@ -3,7 +3,7 @@
 import React, { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Lock, Eye, EyeOff, ArrowRight, ArrowLeft, ShieldAlert, Sparkles } from "lucide-react";
+import { Lock, Eye, EyeOff, ArrowRight, ArrowLeft, ShieldAlert } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -57,12 +57,8 @@ function LoginForm() {
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 mb-5 shadow-inner">
           <Lock className="w-6 h-6" />
         </div>
-        <div className="text-xs uppercase tracking-[0.3em] text-amber-400/90 font-semibold mb-2 flex items-center justify-center gap-1.5">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Accès Privé</span>
-        </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-wider text-white uppercase font-archivo">
-          Galerie <span className="text-amber-400 font-newsreader italic font-normal text-3xl sm:text-4xl">Artemis</span>
+          Galerie Artemis
         </h1>
         <p className="mt-2 text-sm text-zinc-400 font-light">
           Espace d'administration réservé à la direction de la galerie.
@@ -95,11 +91,10 @@ function LoginForm() {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Saisissez votre code d'accès"
                 autoComplete="current-password"
                 autoFocus
                 disabled={loading}
-                className="w-full bg-[#0A0A0C] border border-zinc-700/80 rounded-xl px-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400/40 transition-all pr-11"
+                className="w-full bg-[#0A0A0C] border border-zinc-700/80 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400/40 transition-all pr-11"
               />
               <button
                 type="button"
@@ -110,9 +105,6 @@ function LoginForm() {
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-            <p className="mt-2 text-[11px] text-zinc-500">
-              Clé d'accès configurée dans vos variables d'environnement.
-            </p>
           </div>
 
           <button

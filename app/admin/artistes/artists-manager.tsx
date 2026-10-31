@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Artist, Artwork } from "@/types/artemis";
 import { Plus, Edit2, Trash2, X, Upload, Users, Palette } from "lucide-react";
+import { ConfirmModal } from "@/components/admin/confirm-modal";
 
 interface ArtistsManagerProps {
   initialArtists: Artist[];
@@ -14,6 +15,8 @@ export function ArtistsManager({ initialArtists, artworks }: ArtistsManagerProps
   const [artists, setArtists] = useState<Artist[]>(initialArtists);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingArtist, setEditingArtist] = useState<Artist | null>(null);
+  const [artistToDelete, setArtistToDelete] = useState<{ id: string; name: string; worksCount: number } | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
 
@@ -159,30 +162,21 @@ export function ArtistsManager({ initialArtists, artworks }: ArtistsManagerProps
     }
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    const artistWorks = artworks.filter((w) => w.artistId === id);
-    if (artistWorks.length > 0) {
-      if (
-        !confirm(
-          `Attention : Cet artiste possède ${artistWorks.length} œuvre(s) associée(s). Supprimer quand même ?`
-        )
-      ) {
-        return;
-      }
-    } else {
-      if (!confirm(`Supprimer définitivement l'artiste « ${name} » ?`)) return;
-    }
-
+  const handleConfirmDelete = async () => {
+    if (!artistToDelete) return;
+    setDeleting(true);
     try {
-      const res = await fetch(`/api/artists?id=${encodeURIComponent(id)}`, {
+      const res = await fetch(`/api/artists?id=${encodeURIComponent(artistToDelete.id)}`, {
         method: "DELETE",
       });
       if (res.ok) {
-        setArtists((prev) => prev.filter((a) => a.id !== id));
+        setArtists((prev) => prev.filter((a) => a.id !== artistToDelete.id));
+        setArtistToDelete(null);
       }
     } catch (err) {
       console.error(err);
-      alert("Erreur lors de la suppression");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -277,7 +271,10 @@ export function ArtistsManager({ initialArtists, artworks }: ArtistsManagerProps
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => handleDelete(artist.id, artist.name)}
+                    onClick={() => {
+                      const worksCount = artworks.filter((w) => w.artistId === artist.id).length;
+                      setArtistToDelete({ id: artist.id, name: artist.name, worksCount });
+                    }}
                     className="p-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-red-400 transition-colors"
                     title="Supprimer"
                   >
@@ -448,6 +445,23 @@ export function ArtistsManager({ initialArtists, artworks }: ArtistsManagerProps
           </div>
         </div>
       )}
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={!!artistToDelete}
+        title="Supprimer l'artiste"
+        message={
+          artistToDelete
+            ? artistToDelete.worksCount > 0
+              ? `Cet artiste possède ${artistToDelete.worksCount} œuvre(s) associée(s). Confirmez-vous sa suppression ?`
+              : `Confirmez-vous la suppression définitive de l'artiste « ${artistToDelete.name} » ?`
+            : ""
+        }
+        confirmLabel="Supprimer"
+        cancelLabel="Annuler"
+        loading={deleting}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setArtistToDelete(null)}
+      />
     </div>
   );
 }

@@ -35,9 +35,9 @@ export function Hero({ featuredArtworks }: HeroProps) {
   }, [works.length]);
 
   return (
-    <section className="relative h-[180svh] bg-[#1B0F08] text-white overflow-clip">
-      {/* Sticky Art Container */}
-      <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
+    <section className="relative h-[100svh] bg-[#1B0F08] text-white overflow-clip">
+      {/* Art Container */}
+      <div className="relative h-full w-full overflow-hidden">
         {currentWork && (
           <Link
             href={`/oeuvres/${currentWork.slug || currentWork.id}`}

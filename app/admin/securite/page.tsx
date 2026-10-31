@@ -123,7 +123,7 @@ CREATE POLICY "Allow all on admin_settings" ON admin_settings FOR ALL USING (tru
           Gestion du mot de passe
         </h1>
         <p className="text-sm text-zinc-400 mt-1">
-          Modifiez le mot de passe d'accès à l'espace d'administration de la galerie en toute autonomie.
+          Modifiez le mot de passe d'accès à l'espace d'administration de la galerie.
         </p>
       </div>
 
@@ -168,157 +168,114 @@ CREATE POLICY "Allow all on admin_settings" ON admin_settings FOR ALL USING (tru
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Form Card (2 cols) */}
-        <div className="lg:col-span-2 bg-[#141416] border border-zinc-800 rounded-2xl p-7 shadow-xl">
-          <h2 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
-            <Lock className="w-4 h-4 text-or" />
-            <span>Modifier le mot de passe</span>
-          </h2>
-          <p className="text-xs text-zinc-400 mb-6">
-            Le nouveau mot de passe remplacera immédiatement l'ancien pour tout le monde.
-          </p>
+      <div className="max-w-2xl bg-[#141416] border border-zinc-800 rounded-2xl p-7 sm:p-8 shadow-xl">
+        <h2 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+          <Lock className="w-4 h-4 text-or" />
+          <span>Modifier le mot de passe</span>
+        </h2>
+        <p className="text-xs text-zinc-400 mb-6">
+          Le nouveau mot de passe remplacera immédiatement l'ancien pour tout le monde.
+        </p>
 
-          {error && (
-            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/25 flex items-start gap-3 text-red-300 text-sm">
-              <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
-              <div className="text-xs leading-relaxed">{error}</div>
+        {error && (
+          <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/25 flex items-start gap-3 text-red-300 text-sm">
+            <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+            <div className="text-xs leading-relaxed">{error}</div>
+          </div>
+        )}
+
+        {success && (
+          <div className="mb-6 p-4 rounded-xl bg-green-500/10 border border-green-500/25 flex items-start gap-3 text-green-300 text-sm">
+            <CheckCircle2 className="w-5 h-5 text-green-400 shrink-0 mt-0.5" />
+            <div className="text-xs leading-relaxed font-medium">{success}</div>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Current Password */}
+          <div>
+            <label className="block text-xs uppercase tracking-wider font-semibold text-zinc-300 mb-2">
+              Mot de passe actuel
+            </label>
+            <div className="relative">
+              <input
+                type={showCurrent ? "text" : "password"}
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="w-full bg-[#0B0B0D] border border-zinc-750 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-or focus:ring-1 focus:ring-or/30 pr-11 transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowCurrent(!showCurrent)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200 p-1"
+              >
+                {showCurrent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
-          )}
-
-          {success && (
-            <div className="mb-6 p-4 rounded-xl bg-green-500/10 border border-green-500/25 flex items-start gap-3 text-green-300 text-sm">
-              <CheckCircle2 className="w-5 h-5 text-green-400 shrink-0 mt-0.5" />
-              <div className="text-xs leading-relaxed font-medium">{success}</div>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Current Password */}
-            <div>
-              <label className="block text-xs uppercase tracking-wider font-semibold text-zinc-300 mb-2">
-                Mot de passe actuel
-              </label>
-              <div className="relative">
-                <input
-                  type={showCurrent ? "text" : "password"}
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder="Saisissez le mot de passe actuel"
-                  className="w-full bg-[#0B0B0D] border border-zinc-750 rounded-xl px-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-or focus:ring-1 focus:ring-or/30 pr-11 transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowCurrent(!showCurrent)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200 p-1"
-                >
-                  {showCurrent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            {/* New Password */}
-            <div>
-              <label className="block text-xs uppercase tracking-wider font-semibold text-zinc-300 mb-2">
-                Nouveau mot de passe
-              </label>
-              <div className="relative">
-                <input
-                  type={showNew ? "text" : "password"}
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Minimum 6 caractères"
-                  className="w-full bg-[#0B0B0D] border border-zinc-750 rounded-xl px-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-or focus:ring-1 focus:ring-or/30 pr-11 transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowNew(!showNew)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200 p-1"
-                >
-                  {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            {/* Confirm New Password */}
-            <div>
-              <label className="block text-xs uppercase tracking-wider font-semibold text-zinc-300 mb-2">
-                Confirmer le nouveau mot de passe
-              </label>
-              <div className="relative">
-                <input
-                  type={showConfirm ? "text" : "password"}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Répétez le nouveau mot de passe"
-                  className="w-full bg-[#0B0B0D] border border-zinc-750 rounded-xl px-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-or focus:ring-1 focus:ring-or/30 pr-11 transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200 p-1"
-                >
-                  {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3.5 px-6 rounded-xl bg-or hover:bg-or2 text-black font-bold uppercase tracking-wider text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-or/10 active:scale-[0.99] disabled:opacity-50"
-            >
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                  Mise à jour en cours...
-                </span>
-              ) : (
-                <>
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>Enregistrer le nouveau mot de passe</span>
-                </>
-              )}
-            </button>
-          </form>
-        </div>
-
-        {/* Security Info Card (1 col) */}
-        <div className="space-y-6">
-          <div className="bg-[#141416] border border-zinc-800 rounded-2xl p-6">
-            <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-green-400" />
-              <span>Chiffrement & Sécurité</span>
-            </h3>
-            <ul className="text-xs text-zinc-400 space-y-3 leading-relaxed">
-              <li className="flex items-start gap-2">
-                <span className="text-or font-bold">•</span>
-                <span>
-                  <strong>Hachage PBKDF2</strong> : Votre mot de passe n'est jamais stocké en clair, il est protégé par 100 000 itérations cryptographiques avec sel aléatoire.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-or font-bold">•</span>
-                <span>
-                  <strong>Session 14 jours</strong> : Vous restez connecté confortablement sans devoir retaper le code à chaque visite.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-or font-bold">•</span>
-                <span>
-                  <strong>Autonomie complète</strong> : Tout changement effectué ici s'applique immédiatement en ligne sans toucher à Vercel.
-                </span>
-              </li>
-            </ul>
           </div>
 
-          <div className="bg-[#141416]/50 border border-zinc-850 rounded-2xl p-6 text-xs text-zinc-400 space-y-2">
-            <div className="font-semibold text-white">Conseil pour la galerie</div>
-            <p>
-              Partagez ce mot de passe uniquement avec les membres autorisés de l'équipe Artemis ayant la charge d'ajouter ou de modifier des tableaux.
-            </p>
+          {/* New Password */}
+          <div>
+            <label className="block text-xs uppercase tracking-wider font-semibold text-zinc-300 mb-2">
+              Nouveau mot de passe
+            </label>
+            <div className="relative">
+              <input
+                type={showNew ? "text" : "password"}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full bg-[#0B0B0D] border border-zinc-750 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-or focus:ring-1 focus:ring-or/30 pr-11 transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowNew(!showNew)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200 p-1"
+              >
+                {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
-        </div>
+
+          {/* Confirm New Password */}
+          <div>
+            <label className="block text-xs uppercase tracking-wider font-semibold text-zinc-300 mb-2">
+              Confirmer le nouveau mot de passe
+            </label>
+            <div className="relative">
+              <input
+                type={showConfirm ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full bg-[#0B0B0D] border border-zinc-750 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-or focus:ring-1 focus:ring-or/30 pr-11 transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirm(!showConfirm)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200 p-1"
+              >
+                {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3.5 px-6 rounded-xl bg-or hover:bg-or2 text-black font-bold uppercase tracking-wider text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-or/10 active:scale-[0.99] disabled:opacity-50"
+          >
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                Mise à jour en cours...
+              </span>
+            ) : (
+              <>
+                <ShieldCheck className="w-4 h-4" />
+                <span>Enregistrer le nouveau mot de passe</span>
+              </>
+            )}
+          </button>
+        </form>
       </div>
     </div>
   );
