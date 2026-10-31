@@ -12,19 +12,18 @@ interface NavigationProps {
 
 export function Navigation({ variant = "transparent" }: NavigationProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { lang, setLang, t } = useLanguage();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const { lang, switchLanguage, t } = useLanguage();
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        setIsOpen(false);
-      }
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40);
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  // Lock scroll when menu is open
+  // Lock body scroll when menu is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -36,46 +35,82 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
     };
   }, [isOpen]);
 
+  const isSolidHeader = variant === "solid" || isScrolled;
+
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-[var(--m)] py-5 transition-colors duration-300 ${variant === "solid"
+        className={`fixed top-0 left-0 right-0 z-40 flex items-start justify-between px-[var(--m)] py-4 sm:py-5 transition-all duration-300 pointer-events-none ${isSolidHeader
             ? "bg-wall/90 backdrop-blur-md border-b border-pl text-tx"
             : "text-white"
           }`}
       >
+        {/* Brand / Logo - High fidelity, generous size (3-4x original tiny box) */}
         <Link
           href="/"
-          className="relative block w-[clamp(90px,10vw,140px)] group focus-visible:outline-white"
+          className="relative block w-[clamp(110px,13vw,165px)] group focus-visible:outline-white pointer-events-auto"
           aria-label="Artemis Galerie"
         >
-          <div className="relative w-full aspect-[220/85]">
+          {/* Subtle ambient glow behind logo */}
+          <div className="absolute -inset-4 bg-radial from-black/40 via-black/15 to-transparent rounded-full blur-md pointer-events-none -z-10" />
+          <div className="relative w-full aspect-[148/220] filter drop-shadow-md">
             <Image
               src="/logo.png"
               alt="Artemis Galerie"
               fill
               priority
-              sizes="(max-width: 768px) 100px, 140px"
-              className={`object-contain transition-opacity duration-300 ${variant === "solid" ? "filter brightness-0 dark:invert" : ""
-                }`}
+              sizes="(max-width: 768px) 120px, 165px"
+              className="object-contain object-left-top transition-transform duration-300 group-hover:scale-[1.02]"
             />
           </div>
         </Link>
 
-        {/* Menu button */}
-        <div className="flex items-center gap-4">
+        {/* Right side actions: Quick FR/EN Switcher + Menu button */}
+        <div className="flex items-center gap-3 sm:gap-4 pointer-events-auto">
+          {/* Direct Language Switcher */}
+          <div
+            className={`flex items-center text-xs font-semibold tracking-wider rounded-full px-3 py-1.5 border transition-all ${isSolidHeader
+                ? "bg-pl/80 border-tx/15 text-tx"
+                : "bg-black/35 backdrop-blur-md border-white/25 text-white"
+              }`}
+            role="group"
+            aria-label="Changer de langue"
+          >
+            <button
+              onClick={() => switchLanguage("fr")}
+              className={`px-1.5 py-0.5 rounded transition-colors ${lang === "fr" ? "text-or font-bold" : "opacity-60 hover:opacity-100"
+                }`}
+              aria-pressed={lang === "fr"}
+            >
+              FR
+            </button>
+            <span className="opacity-30 mx-0.5">/</span>
+            <button
+              onClick={() => switchLanguage("en")}
+              className={`px-1.5 py-0.5 rounded transition-colors ${lang === "en" ? "text-or font-bold" : "opacity-60 hover:opacity-100"
+                }`}
+              aria-pressed={lang === "en"}
+            >
+              EN
+            </button>
+          </div>
+
+          {/* Menu button */}
           <button
             onClick={() => setIsOpen(true)}
-            className={`w-12 h-12 rounded-full grid place-content-center transition-all duration-300 focus-visible:outline-2 ${variant === "solid"
-                ? "border border-tx/30 bg-tx/5 text-tx hover:bg-tx/10"
+            className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full grid place-content-center transition-all duration-300 focus-visible:outline-2 ${isSolidHeader
+                ? "border border-tx/25 bg-tx/5 text-tx hover:bg-tx/10"
                 : "border border-white/30 bg-black/30 backdrop-blur-md text-white hover:bg-black/50"
               }`}
             aria-label={t("menu")}
             aria-expanded={isOpen}
           >
             <div className="flex flex-col gap-1.5 items-end w-5">
-              <span className={`h-0.5 w-5 ${variant === "solid" ? "bg-tx" : "bg-white"}`} />
-              <span className={`h-0.5 w-3.5 transition-all group-hover:w-5 ${variant === "solid" ? "bg-tx" : "bg-white"}`} />
+              <span className={`h-0.5 w-5 ${isSolidHeader ? "bg-tx" : "bg-white"}`} />
+              <span
+                className={`h-0.5 w-3.5 transition-all group-hover:w-5 ${isSolidHeader ? "bg-tx" : "bg-white"
+                  }`}
+              />
             </div>
           </button>
         </div>
@@ -98,8 +133,17 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
           <X className="w-5 h-5" />
         </button>
 
-        {/* Primary Links */}
-        <ul className="list-none space-y-4 my-auto">
+        {/* Navigation list */}
+        <ul className="space-y-4 md:space-y-6 my-auto">
+          <li>
+            <Link
+              href="/"
+              onClick={() => setIsOpen(false)}
+              className="font-archivo font-extrabold text-[clamp(2.5rem,7vw,5.5rem)] leading-none hover:text-or2 transition-colors block"
+            >
+              {t("home")}
+            </Link>
+          </li>
           <li>
             <Link
               href="/#collection"
@@ -120,6 +164,15 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
           </li>
           <li>
             <Link
+              href="/#contact"
+              onClick={() => setIsOpen(false)}
+              className="font-archivo font-extrabold text-[clamp(2.5rem,7vw,5.5rem)] leading-none hover:text-or2 transition-colors block"
+            >
+              {lang === "fr" ? "Contact & Acquisitions" : "Contact & Inquiries"}
+            </Link>
+          </li>
+          <li>
+            <Link
               href="/#visite"
               onClick={() => setIsOpen(false)}
               className="font-archivo font-extrabold text-[clamp(2.5rem,7vw,5.5rem)] leading-none hover:text-or2 transition-colors block"
@@ -133,7 +186,7 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
         <div className="flex flex-wrap items-center justify-between gap-6 pt-6 border-t border-white/15 text-sm">
           <div className="flex items-center gap-2" role="group" aria-label="Langue">
             <button
-              onClick={() => setLang("fr")}
+              onClick={() => switchLanguage("fr")}
               className={`py-1.5 px-3 transition-colors ${lang === "fr"
                   ? "text-white border-b-2 border-or font-semibold"
                   : "text-white/50 hover:text-white"
@@ -144,7 +197,7 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
             </button>
             <span className="text-white/20">|</span>
             <button
-              onClick={() => setLang("en")}
+              onClick={() => switchLanguage("en")}
               className={`py-1.5 px-3 transition-colors ${lang === "en"
                   ? "text-white border-b-2 border-or font-semibold"
                   : "text-white/50 hover:text-white"
@@ -155,7 +208,7 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
             </button>
           </div>
 
-          <div className="flex items-center gap-6 text-white/70">
+          <div className="flex items-center gap-6 text-white/70 text-xs uppercase tracking-wider">
             <a
               href="https://www.instagram.com/artemisgalerietg/"
               target="_blank"
@@ -186,4 +239,3 @@ export function Navigation({ variant = "transparent" }: NavigationProps) {
     </>
   );
 }
-

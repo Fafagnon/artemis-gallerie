@@ -53,7 +53,7 @@ export async function createSessionToken(secret: string): Promise<string> {
     key,
     encoder.encode(`artemis-admin-session:${timestamp}`)
   );
-  
+
   const signature = Array.from(new Uint8Array(signatureBuffer))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");

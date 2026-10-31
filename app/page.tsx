@@ -3,6 +3,7 @@ import { Navigation } from "@/components/navigation";
 import { Hero } from "@/components/hero";
 import { ArtistsSpotlight } from "@/components/artists-spotlight";
 import { CollectionWall } from "@/components/collection-wall";
+import { ContactSection } from "@/components/contact-section";
 import { VisitSection } from "@/components/visit-section";
 import { Footer } from "@/components/footer";
 
@@ -23,9 +24,15 @@ export default async function HomePage() {
       <Hero featuredArtworks={heroArtworks.length > 0 ? heroArtworks : artworks.slice(0, 3)} />
       <ArtistsSpotlight artists={artists} artworks={artworks} />
       <CollectionWall initialArtworks={artworks} artists={artists} />
+      <div id="contact">
+        <ContactSection
+          phone={galleryConfig.phone}
+          whatsapp={galleryConfig.whatsapp}
+          email={galleryConfig.email}
+        />
+      </div>
       <VisitSection config={galleryConfig} />
       <Footer />
     </main>
   );
 }
-

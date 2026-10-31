@@ -11,7 +11,10 @@ export function formatPrice(price: number, lang: "fr" | "en" = "fr"): string {
   return new Intl.NumberFormat(locale).format(price) + "\u00a0FCFA";
 }
 
-export function getStatusBadge(status: ArtworkStatus, lang: "fr" | "en" = "fr"): { label: string; colorClass: string } {
+export function getStatusBadge(
+  status: ArtworkStatus,
+  lang: "fr" | "en" = "fr"
+): { label: string; dotColor: string; pillClass: string } {
   const labels = {
     fr: {
       disponible: "Disponible",
@@ -25,15 +28,28 @@ export function getStatusBadge(status: ArtworkStatus, lang: "fr" | "en" = "fr"):
     },
   };
 
-  const colors = {
-    disponible: "text-tx border-b-2 border-or font-semibold",
-    reserve: "text-or font-semibold border-b-2 border-or",
-    vendu: "text-gr font-normal",
+  const styles = {
+    disponible: {
+      dotColor: "bg-emerald-500 animate-pulse",
+      pillClass:
+        "bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border border-emerald-500/25",
+    },
+    reserve: {
+      dotColor: "bg-amber-500",
+      pillClass:
+        "bg-amber-500/10 text-amber-800 dark:text-amber-300 border border-amber-500/25",
+    },
+    vendu: {
+      dotColor: "bg-zinc-400",
+      pillClass:
+        "bg-zinc-500/10 text-zinc-500 border border-zinc-500/20",
+    },
   };
 
   return {
     label: labels[lang][status] || status,
-    colorClass: colors[status] || "",
+    dotColor: styles[status]?.dotColor || "bg-zinc-400",
+    pillClass: styles[status]?.pillClass || "",
   };
 }
 

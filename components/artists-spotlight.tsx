@@ -19,9 +19,6 @@ export function ArtistsSpotlight({ artists, artworks }: ArtistsSpotlightProps) {
     <section className="px-[var(--m)] py-20 border-b border-pl bg-wall">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
         <div>
-          <span className="text-xs uppercase tracking-widest text-gr block mb-2 font-medium">
-            Artemis • Artistes résidents
-          </span>
           <h2 className="font-archivo font-extrabold text-[clamp(2rem,4vw,3.2rem)] leading-none uppercase tracking-tight">
             {t("artistsTitle")}
           </h2>
@@ -31,7 +28,9 @@ export function ArtistsSpotlight({ artists, artworks }: ArtistsSpotlightProps) {
           href="/artistes"
           className="inline-flex items-center gap-1.5 text-sm font-semibold tracking-wide hover:text-or transition-colors uppercase"
         >
-          <span>Découvrir tous les artistes</span>
+          <span>
+            {lang === "fr" ? "Découvrir tous les artistes" : "Discover all artists"}
+          </span>
           <ArrowUpRight className="w-4 h-4" />
         </Link>
       </div>

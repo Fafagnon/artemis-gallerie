@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { Artist, Artwork, GalleryConfig } from "@/types/artemis";
+import { Artist, Artwork, GalleryConfig, ContactMessage } from "@/types/artemis";
 import { supabase } from "@/lib/supabase";
 
 const DATA_FILE = path.join(process.cwd(), "data", "artemis-data.json");
@@ -9,6 +9,7 @@ interface ArtemisStore {
   artists: Artist[];
   artworks: Artwork[];
   galleryConfig: GalleryConfig;
+  messages?: ContactMessage[];
 }
 
 function readLocalStore(): ArtemisStore {
@@ -447,4 +448,124 @@ export async function updateGalleryConfig(
   };
   writeLocalStore(store);
   return store.galleryConfig;
+}
+
+
+// CONTACT MESSAGES API
+function mapMessageRow(row: any): ContactMessage {
+  return {
+    id: row.id,
+    firstName: row.first_name,
+    lastName: row.last_name,
+    contactInfo: row.contact_info,
+    message: row.message || "",
+    artworkId: row.artwork_id,
+    status: row.status || "unread",
+    createdAt: row.created_at,
+  };
+}
+
+export async function getContactMessages(): Promise<ContactMessage[]> {
+  try {
+    const { data, error } = await supabase
+      .from("contact_messages")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      return data.map(mapMessageRow);
+    }
+  } catch (err) {
+    console.warn("Supabase getContactMessages error:", err);
+  }
+
+  const store = readLocalStore();
+  return (store.messages || []).sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+}
+
+export async function createContactMessage(
+  data: Omit<ContactMessage, "id" | "createdAt" | "status">
+): Promise<ContactMessage> {
+  const id = `msg-${Date.now()}`;
+  const now = new Date().toISOString();
+  const newMsg: ContactMessage = {
+    ...data,
+    id,
+    status: "unread",
+    createdAt: now,
+  };
+
+  try {
+    const { data: supaData, error } = await supabase
+      .from("contact_messages")
+      .insert({
+        id: newMsg.id,
+        first_name: newMsg.firstName,
+        last_name: newMsg.lastName,
+        contact_info: newMsg.contactInfo,
+        message: newMsg.message || null,
+        artwork_id: newMsg.artworkId || null,
+        status: newMsg.status,
+        created_at: newMsg.createdAt,
+      })
+      .select()
+      .single();
+
+    if (!error && supaData) {
+      return mapMessageRow(supaData);
+    }
+  } catch (err) {
+    console.warn("Supabase createContactMessage error:", err);
+  }
+
+  const store = readLocalStore();
+  if (!store.messages) store.messages = [];
+  store.messages.unshift(newMsg);
+  writeLocalStore(store);
+  return newMsg;
+}
+
+export async function updateContactMessageStatus(
+  id: string,
+  status: "unread" | "read" | "archived"
+): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from("contact_messages")
+      .update({ status })
+      .eq("id", id);
+    if (!error) return true;
+  } catch (err) {
+    console.warn("Supabase updateContactMessageStatus error:", err);
+  }
+
+  const store = readLocalStore();
+  if (store.messages) {
+    const msg = store.messages.find((m) => m.id === id);
+    if (msg) {
+      msg.status = status;
+      writeLocalStore(store);
+      return true;
+    }
+  }
+  return false;
+}
+
+export async function deleteContactMessage(id: string): Promise<boolean> {
+  try {
+    const { error } = await supabase.from("contact_messages").delete().eq("id", id);
+    if (!error) return true;
+  } catch (err) {
+    console.warn("Supabase deleteContactMessage error:", err);
+  }
+
+  const store = readLocalStore();
+  if (store.messages) {
+    store.messages = store.messages.filter((m) => m.id !== id);
+    writeLocalStore(store);
+    return true;
+  }
+  return false;
 }

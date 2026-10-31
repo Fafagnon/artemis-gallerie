@@ -7,6 +7,7 @@ export type Language = "fr" | "en";
 interface LanguageContextType {
   lang: Language;
   setLang: (lang: Language) => void;
+  switchLanguage: (lang: Language) => void;
   t: (key: string) => string;
 }
 
@@ -17,6 +18,7 @@ const translations: Record<Language, Record<string, string>> = {
     collection: "Collection",
     artists: "Artistes",
     visit: "Visite",
+    home: "Accueil",
     admin: "Back-office",
     close: "Fermer",
     menu: "Menu",
@@ -64,7 +66,8 @@ const translations: Record<Language, Record<string, string>> = {
     collection: "Collection",
     artists: "Artists",
     visit: "Visit",
-    admin: "Dashboard",
+    home: "Home",
+    admin: "Back-office",
     close: "Close",
     menu: "Menu",
     all: "All",
@@ -109,7 +112,8 @@ const translations: Record<Language, Record<string, string>> = {
 
 const LanguageContext = createContext<LanguageContextType>({
   lang: "fr",
-  setLang: () => {},
+  setLang: () => { },
+  switchLanguage: () => { },
   t: (key: string) => key,
 });
 
@@ -118,9 +122,12 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("artemis_lang") as Language;
+      const match = document.cookie.match(/artemis_lang=(fr|en)/);
+      const cookieLang = match ? (match[1] as Language) : null;
+      const saved = (cookieLang || localStorage.getItem("artemis_lang")) as Language;
       if (saved === "fr" || saved === "en") {
         setLangState(saved);
+        document.documentElement.lang = saved;
       }
     } catch {
       // ignore
@@ -131,9 +138,17 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     setLangState(newLang);
     try {
       localStorage.setItem("artemis_lang", newLang);
+      document.cookie = `artemis_lang=${newLang}; path=/; max-age=31536000; SameSite=Lax`;
       document.documentElement.lang = newLang;
     } catch {
       // ignore
+    }
+  };
+
+  const switchLanguage = (newLang: Language) => {
+    setLang(newLang);
+    if (typeof window !== "undefined") {
+      window.location.reload();
     }
   };
 
@@ -142,7 +157,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, t }}>
+    <LanguageContext.Provider value={{ lang, setLang, switchLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );
@@ -151,4 +166,3 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 export function useLanguage() {
   return useContext(LanguageContext);
 }
-

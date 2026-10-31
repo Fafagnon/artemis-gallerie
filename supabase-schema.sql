@@ -93,3 +93,20 @@ CREATE TABLE IF NOT EXISTS admin_settings (
 ALTER TABLE admin_settings ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Allow all on admin_settings" ON admin_settings;
 CREATE POLICY "Allow all on admin_settings" ON admin_settings FOR ALL USING (true) WITH CHECK (true);
+
+
+-- 7. Table des messages de contact / demandes d'acquisition
+CREATE TABLE IF NOT EXISTS contact_messages (
+  id TEXT PRIMARY KEY,
+  first_name TEXT NOT NULL,
+  last_name TEXT NOT NULL,
+  contact_info TEXT NOT NULL,
+  message TEXT,
+  artwork_id TEXT,
+  status TEXT CHECK (status IN ('unread', 'read', 'archived')) DEFAULT 'unread',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE contact_messages ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all on contact_messages" ON contact_messages;
+CREATE POLICY "Allow all on contact_messages" ON contact_messages FOR ALL USING (true) WITH CHECK (true);

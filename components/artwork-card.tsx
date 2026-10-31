@@ -77,17 +77,22 @@ export function ArtworkCard({ artwork, artist, priority = false }: ArtworkCardPr
           {artwork.year} • {medium} • {artwork.dimensions}
         </div>
 
-        <div className="flex flex-wrap items-baseline gap-4 mt-3 text-sm">
+        <div className="flex flex-wrap items-center gap-3 mt-3 text-sm">
           <span
             className={
               artwork.status === "vendu"
-                ? "line-through text-gr"
+                ? "line-through text-gr font-medium"
                 : "font-semibold text-tx"
             }
           >
             {formatPrice(artwork.price, lang)}
           </span>
-          <span className={`text-xs ${badge.colorClass}`}>{badge.label}</span>
+          <span
+            className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase ${badge.pillClass}`}
+          >
+            <span className={`w-1.5 h-1.5 rounded-full ${badge.dotColor}`} />
+            <span>{badge.label}</span>
+          </span>
         </div>
       </figcaption>
     </figure>

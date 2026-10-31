@@ -94,7 +94,7 @@
         "en": "A large immersive square canvas where tones unfold with magnetic softness. A subtle dialogue between geometric tension and poetic surrender."
       },
       "featuredInHero": true,
-      "order": 2
+      "order": 3
     },
     {
       "id": "laka-tendresse-expansive-1",
@@ -115,13 +115,13 @@
       "type": "peinture",
       "image": "/artworks/laka/tendresse-expansive-1.jpeg",
       "detailImages": [],
-      "aspectRatio": 1.0,
+      "aspectRatio": 1,
       "description": {
         "fr": "Variation intimiste de la série Tendresse Expansive. La texture dense capture la lumière pour révéler une profondeur émotionnelle singulière.",
         "en": "Intimate variation of the Expansive Tenderness series. The dense texture catches light to reveal a unique emotional resonance."
       },
       "featuredInHero": false,
-      "order": 3
+      "order": 2
     },
     {
       "id": "laka-transmission-de-la-connaissance-2",
@@ -150,7 +150,7 @@
         "en": "This symbolic composition translates the passage of ancestral knowledge between generations. The visual rhythm conveys an unspoken dialogue."
       },
       "featuredInHero": false,
-      "order": 4
+      "order": 5
     },
     {
       "id": "laka-transmission-de-la-connaissance-1",
@@ -177,7 +177,7 @@
         "en": "First chapter of the diptych on knowledge transmission. A vibrant work whose balanced forms invite mindful contemplation."
       },
       "featuredInHero": false,
-      "order": 5
+      "order": 4
     },
     {
       "id": "agbelessessi-portrait-2019",
@@ -244,22 +244,64 @@
     },
     "hours": {
       "fr": [
-        ["Lun.", "Fermé"],
-        ["Mar.", "10:00–19:00"],
-        ["Mer.", "10:00–19:00"],
-        ["Jeu.", "10:00–19:00"],
-        ["Ven.", "10:00–19:00"],
-        ["Sam.", "10:00–19:00"],
-        ["Dim.", "14:00–19:00"]
+        [
+          "Lun.",
+          "Fermé"
+        ],
+        [
+          "Mar.",
+          "10:00–19:00"
+        ],
+        [
+          "Mer.",
+          "10:00–19:00"
+        ],
+        [
+          "Jeu.",
+          "10:00–19:00"
+        ],
+        [
+          "Ven.",
+          "10:00–19:00"
+        ],
+        [
+          "Sam.",
+          "10:00–19:00"
+        ],
+        [
+          "Dim.",
+          "14:00–19:00"
+        ]
       ],
       "en": [
-        ["Mon.", "Closed"],
-        ["Tue.", "10:00–19:00"],
-        ["Wed.", "10:00–19:00"],
-        ["Thu.", "10:00–19:00"],
-        ["Fri.", "10:00–19:00"],
-        ["Sat.", "10:00–19:00"],
-        ["Sun.", "14:00–19:00"]
+        [
+          "Mon.",
+          "Closed"
+        ],
+        [
+          "Tue.",
+          "10:00–19:00"
+        ],
+        [
+          "Wed.",
+          "10:00–19:00"
+        ],
+        [
+          "Thu.",
+          "10:00–19:00"
+        ],
+        [
+          "Fri.",
+          "10:00–19:00"
+        ],
+        [
+          "Sat.",
+          "10:00–19:00"
+        ],
+        [
+          "Sun.",
+          "14:00–19:00"
+        ]
       ]
     },
     "socials": {
@@ -269,6 +311,16 @@
     },
     "locationUrl": "https://maps.app.goo.gl/XiqSTBWZrN7b4yDK7",
     "mapEmbedUrl": "https://maps.google.com/maps?q=6.1628644,1.2293956&z=16&output=embed"
-  }
+  },
+  "messages": [
+    {
+      "firstName": "Kofi",
+      "lastName": "Mensah",
+      "contactInfo": "+228 90 12 34 56",
+      "message": "Demande pour Tendresse Expansive 1.",
+      "id": "msg-1793426887972",
+      "status": "unread",
+      "createdAt": "2026-10-31T06:08:07.972Z"
+    }
+  ]
 }
-

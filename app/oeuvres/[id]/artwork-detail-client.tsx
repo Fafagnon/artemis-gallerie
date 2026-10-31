@@ -165,11 +165,16 @@ export function ArtworkDetailClient({
             </div>
 
             {/* Price & Status */}
-            <div className="flex items-baseline gap-4 py-4 border-y border-pl text-2xl font-semibold">
+            <div className="flex items-center gap-4 py-4 border-y border-pl text-2xl font-semibold">
               <span className={isSold ? "line-through text-gr" : "text-tx"}>
                 {formatPrice(artwork.price, lang)}
               </span>
-              <span className={`text-sm ${badge.colorClass}`}>{badge.label}</span>
+              <span
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase ${badge.pillClass}`}
+              >
+                <span className={`w-2 h-2 rounded-full ${badge.dotColor}`} />
+                <span>{badge.label}</span>
+              </span>
             </div>
 
             {/* Description */}

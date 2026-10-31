@@ -62,3 +62,15 @@ export interface GalleryConfig {
   mapEmbedUrl: string;
 }
 
+
+
+export interface ContactMessage {
+  id: string;
+  firstName: string;
+  lastName: string;
+  contactInfo: string;
+  message?: string;
+  artworkId?: string;
+  status: 'unread' | 'read' | 'archived';
+  createdAt: string;
+}

@@ -50,19 +50,34 @@ export function CollectionWall({ initialArtworks, artists }: CollectionWallProps
           <h2 className="font-archivo font-extrabold text-[clamp(2.2rem,4.5vw,3.8rem)] leading-none uppercase tracking-tight">
             {t("collection")}
           </h2>
-          <p className="text-gr text-sm md:text-base mt-2">
-            Art contemporain africain • Œuvres originales disponibles à Lomé
-          </p>
         </div>
 
-        {/* Dual Filter: Types & Artists */}
-        <div className="flex flex-wrap items-center gap-6">
+        {/* Dual Filter: Types & Artists - High Contrast, ZERO milky haze */}
+        <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+          {/* Category Tabs */}
+          <div className="flex flex-wrap gap-2 sm:gap-2.5" role="group" aria-label="Filtrer par technique">
+            {categories.map((cat) => (
+              <button
+                key={cat.key}
+                onClick={() => setActiveCategory(cat.key)}
+                className={`text-xs uppercase tracking-wider px-3.5 py-1.5 rounded-full transition-all duration-200 ${
+                  activeCategory === cat.key
+                    ? "bg-tx text-wall font-bold shadow-sm"
+                    : "border border-tx/25 text-tx/70 hover:text-tx hover:border-tx bg-transparent"
+                }`}
+                aria-pressed={activeCategory === cat.key}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+
           {/* Artist Selector */}
           <div className="relative">
             <select
               value={activeArtistId}
               onChange={(e) => setActiveArtistId(e.target.value)}
-              className="appearance-none bg-pl/60 hover:bg-pl text-tx font-medium text-sm py-2 px-4 pr-8 rounded-none border border-transparent hover:border-tx/30 focus:outline-none focus:border-tx transition-colors cursor-pointer"
+              className="appearance-none bg-wall text-tx font-semibold text-xs uppercase tracking-wider py-1.5 px-3.5 pr-8 rounded-full border border-tx/30 hover:border-tx focus:outline-none focus:border-or transition-colors cursor-pointer shadow-sm"
               aria-label="Filtrer par artiste"
             >
               <option value="all">{t("allArtists")}</option>
@@ -72,26 +87,9 @@ export function CollectionWall({ initialArtworks, artists }: CollectionWallProps
                 </option>
               ))}
             </select>
-            <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-gr">
+            <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-tx">
               ▼
             </div>
-          </div>
-
-          {/* Category Tabs */}
-          <div className="flex flex-wrap gap-5" role="group" aria-label="Filtrer par technique">
-            {categories.map((cat) => (
-              <button
-                key={cat.key}
-                onClick={() => setActiveCategory(cat.key)}
-                className={`text-sm py-2 transition-all duration-200 border-b-2 ${activeCategory === cat.key
-                    ? "font-semibold text-tx border-or"
-                    : "text-gr hover:text-tx border-transparent"
-                  }`}
-                aria-pressed={activeCategory === cat.key}
-              >
-                {cat.label}
-              </button>
-            ))}
           </div>
         </div>
       </div>

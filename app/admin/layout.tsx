@@ -11,6 +11,7 @@ import {
   ExternalLink,
   LogOut,
   KeyRound,
+  Mail,
 } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -27,6 +28,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
     { href: "/admin/oeuvres", label: "Œuvres & Tableaux", icon: Palette },
     { href: "/admin/artistes", label: "Artistes", icon: Users },
+    { href: "/admin/messages", label: "Messages", icon: Mail },
     { href: "/admin/securite", label: "Sécurité", icon: KeyRound },
   ];
 
@@ -62,11 +64,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-xs font-semibold uppercase tracking-wider transition-colors ${
-                    isActive
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-md text-xs font-semibold uppercase tracking-wider transition-colors ${isActive
                       ? "bg-zinc-800 text-white border-b-2 border-or"
                       : "text-zinc-400 hover:text-white hover:bg-zinc-850"
-                  }`}
+                    }`}
                 >
                   <Icon className="w-3.5 h-3.5" />
                   <span>{link.label}</span>
@@ -102,7 +103,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </header>
 
       {/* Mobile nav bar */}
-      <div className="md:hidden border-b border-zinc-800 bg-[#141416] px-4 py-2 flex items-center justify-around text-xs">
+      <div className="md:hidden border-b border-zinc-800 bg-[#141416] px-2 py-2 flex items-center justify-around text-[11px] overflow-x-auto">
         {navLinks.map((link) => {
           const Icon = link.icon;
           const isActive = pathname === link.href;
@@ -110,9 +111,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Link
               key={link.href}
               href={link.href}
-              className={`flex items-center gap-1.5 py-1.5 px-3 rounded ${
-                isActive ? "text-or font-bold" : "text-zinc-400"
-              }`}
+              className={`flex items-center gap-1 py-1.5 px-2 rounded shrink-0 ${isActive ? "text-or font-bold" : "text-zinc-400"
+                }`}
             >
               <Icon className="w-3.5 h-3.5" />
               <span>{link.label}</span>
