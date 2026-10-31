@@ -318,50 +318,6 @@ export function ArtistsManager({ initialArtists, artworks }: ArtistsManagerProps
                 />
               </div>
 
-              {/* Champs affichés uniquement en modification : ils sont
-                  retirés du formulaire de création d'un nouvel artiste.
-                  Les valeurs par défaut restent envoyées à la création,
-                  et les valeurs existantes sont conservées en modification. */}
-              {editingArtist && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5 font-semibold">
-                      Nationalité
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.nationality}
-                      onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
-                      className="w-full bg-zinc-800 border border-zinc-700 px-3.5 py-2.5 rounded text-white focus:outline-none focus:border-or"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5 font-semibold">
-                      Ville
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.city}
-                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                      className="w-full bg-zinc-800 border border-zinc-700 px-3.5 py-2.5 rounded text-white focus:outline-none focus:border-or"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5 font-semibold">
-                      Année naiss.
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.birthYear}
-                      onChange={(e) => setFormData({ ...formData, birthYear: Number(e.target.value) })}
-                      className="w-full bg-zinc-800 border border-zinc-700 px-3.5 py-2.5 rounded text-white focus:outline-none focus:border-or"
-                    />
-                  </div>
-                </div>
-              )}
-
               {/* Statement */}
               <div>
                 <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5 font-semibold">
