@@ -1,18 +1,38 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { LayoutDashboard, Palette, Users, Globe, ExternalLink } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { LayoutDashboard, Palette, Users, Globe, ExternalLink, LogOut } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  // If on login page, render clean layout without admin navbar
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
 
   const navLinks = [
     { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
     { href: "/admin/oeuvres", label: "Œuvres & Tableaux", icon: Palette },
     { href: "/admin/artistes", label: "Artistes", icon: Users },
   ];
+
+  const handleLogout = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true);
+    try {
+      await fetch("/api/admin/logout", { method: "POST" });
+    } catch (err) {
+      console.error("Logout error:", err);
+    } finally {
+      router.push("/admin/login");
+      router.refresh();
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#0F0F11] text-zinc-100 flex flex-col font-archivo">
@@ -57,6 +77,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <span className="hidden sm:inline">Voir la galerie</span>
             <ExternalLink className="w-3 h-3 text-zinc-500" />
           </Link>
+
+          <button
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 border border-red-500/20 transition-colors disabled:opacity-50"
+            title="Se déconnecter"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">
+              {loggingOut ? "Déconnexion..." : "Déconnexion"}
+            </span>
+          </button>
         </div>
       </header>
 
@@ -87,4 +119,3 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     </div>
   );
 }
-
