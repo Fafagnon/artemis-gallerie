@@ -59,12 +59,8 @@ export function ArtistProfileView({
         )}
 
         <div className="mt-8 grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-          <div className="md:col-span-8 text-gr text-base md:text-lg leading-relaxed">
-            <p>{bio}</p>
-          </div>
-
-          <div className="md:col-span-4 flex flex-col gap-4">
-            {photoUrl && (
+          {photoUrl && (
+            <div className="md:col-span-4">
               <div className="relative w-full overflow-hidden bg-pl/30 aspect-[4/5]">
                 <Image
                   src={photoUrl}
@@ -74,12 +70,20 @@ export function ArtistProfileView({
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />
               </div>
-            )}
+            </div>
+          )}
+
+          <div
+            className={`${
+              photoUrl ? "md:col-span-8" : "md:col-span-12"
+            } text-gr text-base md:text-lg leading-relaxed`}
+          >
+            <p>{bio}</p>
             <a
               href={waInquiryUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-tx text-wall font-semibold text-xs uppercase tracking-wider hover:bg-or hover:text-black transition-colors"
+              className="mt-6 inline-flex items-center justify-center gap-2 px-6 py-4 bg-tx text-wall font-semibold text-xs uppercase tracking-wider hover:bg-or hover:text-black transition-colors"
             >
               <MessageSquare className="w-4 h-4" />
               <span>
