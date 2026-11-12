@@ -30,6 +30,10 @@ export const metadata: Metadata = {
     "Art contemporain africain",
     "Tableaux contemporains",
   ],
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
   openGraph: {
     title: "Artemis Galerie | Art Contemporain Lomé",
     description: "Catalogue des œuvres originales et informations de visite.",

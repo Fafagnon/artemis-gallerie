@@ -234,9 +234,6 @@ export function ArtistsManager({ initialArtists, artworks }: ArtistsManagerProps
                       <h2 className="text-xl font-bold uppercase tracking-tight text-white">
                         {artist.name}
                       </h2>
-                      <p className="text-xs text-or font-semibold uppercase tracking-wider">
-                        {artist.nationality} • {artist.city || "Lomé"}
-                      </p>
                     </div>
                   </div>
 
