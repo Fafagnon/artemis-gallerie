@@ -20,6 +20,11 @@ export function ArtistsList({ artists, artworks }: ArtistsListProps) {
       {artists.map((artist, idx) => {
         const artistWorks = artworks.filter((w) => w.artistId === artist.id);
         const featuredWork = artistWorks[0];
+        // Photo de l'artiste d'abord (avatarUrl, puis coverImage) ;
+        // première oeuvre en secours, sinon le bloc "en préparation".
+        // Un artiste sans photo garde donc exactement l'affichage d'avant.
+        const photoUrl = artist.avatarUrl || artist.coverImage || undefined;
+        const visualSrc = photoUrl || featuredWork?.image;
         const isReversed = idx % 2 === 1;
 
         const bio = artist.bio[lang] || artist.bio.fr;
@@ -32,21 +37,26 @@ export function ArtistsList({ artists, artworks }: ArtistsListProps) {
               isReversed ? "lg:flex-row-reverse" : ""
             }`}
           >
-            {/* Visual Preview - Clean, NO floating overlay obstructing the artwork */}
+            {/* Visual Preview - Photo de l'artiste si elle existe, sinon
+                première oeuvre. Clean, NO floating overlay obstructing the visual. */}
             <div
               className={`lg:col-span-6 ${
                 isReversed ? "lg:order-2" : "lg:order-1"
               }`}
             >
-              {featuredWork ? (
+              {visualSrc ? (
                 <Link
                   href={`/artistes/${artist.slug}`}
                   className="group block relative w-full overflow-hidden bg-pl/30 aspect-[4/3] focus-visible:outline-2"
                   aria-label={`${artist.name}`}
                 >
                   <Image
-                    src={featuredWork.image}
-                    alt={`Œuvre de ${artist.name}`}
+                    src={visualSrc}
+                    alt={
+                      photoUrl
+                        ? `Photo de ${artist.name}`
+                        : `Œuvre de ${artist.name}`
+                    }
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-700 ease-artemis"
                     sizes="(max-width: 1024px) 100vw, 50vw"

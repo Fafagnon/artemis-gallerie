@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Artist, Artwork, GalleryConfig } from "@/types/artemis";
 import { useLanguage } from "@/context/language-context";
 import { ArtworkCard } from "@/components/artwork-card";
@@ -22,6 +23,9 @@ export function ArtistProfileView({
 
   const bio = artist.bio[lang] || artist.bio.fr;
   const statement = artist.statement?.[lang] || artist.statement?.fr;
+  // Photo de l'artiste (avatarUrl, puis coverImage) ; rien n'est rendu
+  // quand l'artiste n'en a pas, pour ne pas laisser de cadre vide.
+  const photoUrl = artist.avatarUrl || artist.coverImage || undefined;
 
   const waInquiryUrl = `https://wa.me/${config.whatsapp}?text=${encodeURIComponent(
     lang === "fr"
@@ -60,6 +64,17 @@ export function ArtistProfileView({
           </div>
 
           <div className="md:col-span-4 flex flex-col gap-4">
+            {photoUrl && (
+              <div className="relative w-full overflow-hidden bg-pl/30 aspect-[4/5]">
+                <Image
+                  src={photoUrl}
+                  alt={`Photo de ${artist.name}`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              </div>
+            )}
             <a
               href={waInquiryUrl}
               target="_blank"
