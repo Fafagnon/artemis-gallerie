@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Artwork, Artist, ArtworkStatus, ArtworkType } from "@/types/artemis";
 import { formatPrice } from "@/lib/utils";
+import { uploadImage } from "@/lib/image-upload";
 import { Plus, Edit2, Trash2, CheckCircle2, Upload, AlertCircle, X, Search } from "lucide-react";
 import { ConfirmModal } from "@/components/admin/confirm-modal";
 
@@ -87,25 +88,19 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    const input = e.target;
     if (!file) return;
 
     setUploading(true);
     try {
-      const data = new FormData();
-      data.append("file", file);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: data,
-      });
-
-      if (!res.ok) throw new Error("Upload failed");
-      const json = await res.json();
-      setFormData((prev) => ({ ...prev, image: json.url }));
+      const url = await uploadImage(file);
+      setFormData((prev) => ({ ...prev, image: url }));
     } catch (err) {
       console.error(err);
-      alert("Erreur lors de l'envoi de l'image");
+      alert(err instanceof Error ? err.message : "Erreur lors de l'envoi de l'image");
     } finally {
+      // Reset so selecting the same file again retries the upload.
+      input.value = "";
       setUploading(false);
     }
   };
@@ -586,7 +581,7 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
                 </button>
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || uploading}
                   className="px-6 py-2.5 bg-or text-black font-semibold rounded hover:bg-or2 transition-colors uppercase tracking-wider text-xs"
                 >
                   {loading ? "Enregistrement..." : editingArtwork ? "Mettre à jour" : "Créer le tableau"}

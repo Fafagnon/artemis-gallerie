@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Artist, Artwork } from "@/types/artemis";
 import { Plus, Edit2, Trash2, X, Upload, Users, Palette } from "lucide-react";
 import { ConfirmModal } from "@/components/admin/confirm-modal";
+import { uploadImage } from "@/lib/image-upload";
 
 interface ArtistsManagerProps {
   initialArtists: Artist[];
@@ -87,25 +88,19 @@ export function ArtistsManager({ initialArtists, artworks }: ArtistsManagerProps
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    const input = e.target;
     if (!file) return;
 
     setUploading(true);
     try {
-      const data = new FormData();
-      data.append("file", file);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: data,
-      });
-
-      if (!res.ok) throw new Error("Upload failed");
-      const json = await res.json();
-      setFormData((prev) => ({ ...prev, avatarUrl: json.url }));
+      const url = await uploadImage(file);
+      setFormData((prev) => ({ ...prev, avatarUrl: url }));
     } catch (err) {
       console.error(err);
-      alert("Erreur lors de l'envoi de l'image");
+      alert(err instanceof Error ? err.message : "Erreur lors de l'envoi de l'image");
     } finally {
+      // Reset so selecting the same file again retries the upload.
+      input.value = "";
       setUploading(false);
     }
   };
@@ -394,7 +389,7 @@ export function ArtistsManager({ initialArtists, artworks }: ArtistsManagerProps
                 </button>
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || uploading}
                   className="px-6 py-2.5 bg-or text-black font-semibold rounded hover:bg-or2 transition-colors uppercase tracking-wider text-xs"
                 >
                   {loading ? "Enregistrement..." : editingArtist ? "Mettre à jour" : "Créer l'artiste"}
