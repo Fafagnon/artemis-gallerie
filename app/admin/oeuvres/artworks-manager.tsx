@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Artwork, Artist, ArtworkStatus, ArtworkType } from "@/types/artemis";
 import { formatPrice } from "@/lib/utils";
+import { uploadImage, measureImageDimensions } from "@/lib/image-upload";
+import { slugify } from "@/lib/slugify";
 import { Plus, Edit2, Trash2, CheckCircle2, Upload, AlertCircle, X, Search } from "lucide-react";
 import { ConfirmModal } from "@/components/admin/confirm-modal";
 
@@ -36,6 +38,7 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
     status: "disponible" as ArtworkStatus,
     type: "peinture" as ArtworkType,
     image: "",
+    aspectRatio: 1.0,
     descriptionFr: "",
     descriptionEn: "",
     featuredInHero: false,
@@ -57,6 +60,7 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
       status: "disponible",
       type: "peinture",
       image: "",
+      aspectRatio: 1.0,
       descriptionFr: "",
       descriptionEn: "",
       featuredInHero: false,
@@ -78,6 +82,7 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
       status: artwork.status,
       type: artwork.type,
       image: artwork.image,
+      aspectRatio: artwork.aspectRatio || 1.0,
       descriptionFr: artwork.description?.fr || "",
       descriptionEn: artwork.description?.en || "",
       featuredInHero: artwork.featuredInHero || false,
@@ -87,25 +92,34 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    const input = e.target;
     if (!file) return;
 
     setUploading(true);
     try {
-      const data = new FormData();
-      data.append("file", file);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: data,
-      });
-
-      if (!res.ok) throw new Error("Upload failed");
-      const json = await res.json();
-      setFormData((prev) => ({ ...prev, image: json.url }));
+      const url = await uploadImage(file);
+      // Real aspect ratio from the photo itself; if measuring
+      // fails, keep the current ratio instead of blocking.
+      let aspectRatio: number | undefined;
+      try {
+        const dims = await measureImageDimensions(file);
+        if (dims.height > 0) {
+          aspectRatio = Math.round((dims.width / dims.height) * 10000) / 10000;
+        }
+      } catch {
+        aspectRatio = undefined;
+      }
+      setFormData((prev) => ({
+        ...prev,
+        image: url,
+        aspectRatio: aspectRatio ?? prev.aspectRatio,
+      }));
     } catch (err) {
       console.error(err);
-      alert("Erreur lors de l'envoi de l'image");
+      alert(err instanceof Error ? err.message : "Erreur lors de l'envoi de l'image");
     } finally {
+      // Reset so selecting the same file again retries the upload.
+      input.value = "";
       setUploading(false);
     }
   };
@@ -122,9 +136,13 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
         setArtworks((prev) =>
           prev.map((w) => (w.id === id ? { ...w, status: newStatus } : w))
         );
+      } else {
+        const json = await res.json().catch(() => null);
+        alert(json?.error || "Erreur lors du changement de statut");
       }
     } catch (err) {
       console.error(err);
+      alert("Erreur lors du changement de statut");
     }
   };
 
@@ -132,6 +150,12 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
     e.preventDefault();
     if (!formData.titleFr || !formData.artistId) {
       alert("Veuillez renseigner le titre et l'artiste");
+      return;
+    }
+    // A new artwork needs its own photo: never fall back to
+    // another artwork's image. Editing keeps the existing one.
+    if (!editingArtwork && !formData.image) {
+      alert("Ajoutez une photo de l'œuvre avant de créer le tableau.");
       return;
     }
 
@@ -146,16 +170,11 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
         price: Number(formData.price),
         status: formData.status,
         type: formData.type,
-        image: formData.image || "/artworks/laka/terre-feconde.jpeg",
-        aspectRatio: 1.0,
+        image: formData.image,
+        aspectRatio: formData.aspectRatio,
         description: { fr: formData.descriptionFr, en: formData.descriptionEn },
         featuredInHero: formData.featuredInHero,
-        slug: formData.titleFr
-          .toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .replace(/[^a-z0-9]/g, "-")
-          .replace(/-+/g, "-"),
+        slug: slugify(formData.titleFr) || "oeuvre",
       };
 
       if (editingArtwork) {
@@ -164,10 +183,12 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id: editingArtwork.id, ...payload }),
         });
-        if (res.ok) {
-          const updated = await res.json();
-          setArtworks((prev) => prev.map((w) => (w.id === updated.id ? updated : w)));
+        const json = await res.json().catch(() => null);
+        if (res.ok && json) {
+          setArtworks((prev) => prev.map((w) => (w.id === json.id ? json : w)));
           setIsModalOpen(false);
+        } else {
+          alert(json?.error || "Erreur lors de l'enregistrement");
         }
       } else {
         const res = await fetch("/api/artworks", {
@@ -175,10 +196,12 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-        if (res.ok) {
-          const created = await res.json();
-          setArtworks((prev) => [created, ...prev]);
+        const json = await res.json().catch(() => null);
+        if (res.ok && json) {
+          setArtworks((prev) => [json, ...prev]);
           setIsModalOpen(false);
+        } else {
+          alert(json?.error || "Erreur lors de l'enregistrement");
         }
       }
     } catch (err) {
@@ -200,9 +223,13 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
       if (res.ok) {
         setArtworks((prev) => prev.filter((w) => w.id !== artworkToDelete.id));
         setArtworkToDelete(null);
+      } else {
+        const json = await res.json().catch(() => null);
+        alert(json?.error || "Erreur lors de la suppression");
       }
     } catch (err) {
       console.error(err);
+      alert("Erreur lors de la suppression");
     } finally {
       setDeleting(false);
     }
@@ -457,8 +484,8 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
                 </div>
               </div>
 
-              {/* Dimensions & Price */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Dimensions, Price & Year */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5 font-semibold">
                     Dimensions *
@@ -482,6 +509,22 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
                     placeholder="450000"
+                    className="w-full bg-zinc-800 border border-zinc-700 px-3.5 py-2.5 rounded text-white focus:outline-none focus:border-or"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5 font-semibold">
+                    Année *
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.year}
+                    onChange={(e) => setFormData({ ...formData, year: Number(e.target.value) })}
+                    placeholder="ex. 2024"
+                    min={1000}
+                    max={new Date().getFullYear() + 1}
                     className="w-full bg-zinc-800 border border-zinc-700 px-3.5 py-2.5 rounded text-white focus:outline-none focus:border-or"
                     required
                   />
@@ -564,13 +607,26 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
               {/* Curatorial description */}
               <div>
                 <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5 font-semibold">
-                  Texte de présentation / Démarche curatoriale
+                  Texte de présentation / Démarche curatoriale (Français)
                 </label>
                 <textarea
                   rows={3}
                   value={formData.descriptionFr}
                   onChange={(e) => setFormData({ ...formData, descriptionFr: e.target.value })}
                   placeholder="Notes explicatives sur l'œuvre, symbolisme, intentions artistiques..."
+                  className="w-full bg-zinc-800 border border-zinc-700 px-3.5 py-2.5 rounded text-white focus:outline-none focus:border-or"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5 font-semibold">
+                  Texte de présentation / Démarche curatoriale (Anglais)
+                </label>
+                <textarea
+                  rows={3}
+                  value={formData.descriptionEn}
+                  onChange={(e) => setFormData({ ...formData, descriptionEn: e.target.value })}
+                  placeholder="Explanatory notes about the work, symbolism, artistic intentions..."
                   className="w-full bg-zinc-800 border border-zinc-700 px-3.5 py-2.5 rounded text-white focus:outline-none focus:border-or"
                 />
               </div>
@@ -586,7 +642,7 @@ export function ArtworksManager({ initialArtworks, artists }: ArtworksManagerPro
                 </button>
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || uploading}
                   className="px-6 py-2.5 bg-or text-black font-semibold rounded hover:bg-or2 transition-colors uppercase tracking-wider text-xs"
                 >
                   {loading ? "Enregistrement..." : editingArtwork ? "Mettre à jour" : "Créer le tableau"}
