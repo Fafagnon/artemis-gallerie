@@ -1,5 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getArtists, createArtist, updateArtist, deleteArtist } from "@/lib/db";
+import {
+  getArtists,
+  createArtist,
+  updateArtist,
+  deleteArtist,
+  DbOperationError,
+} from "@/lib/db";
+
+function serverError(error: unknown, fallback: string): NextResponse {
+  console.error(fallback, error);
+  if (error instanceof DbOperationError) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+  return NextResponse.json({ error: fallback }, { status: 500 });
+}
 
 export async function GET() {
   const artists = await getArtists();
@@ -15,8 +29,7 @@ export async function POST(req: NextRequest) {
     const newArtist = await createArtist(body);
     return NextResponse.json(newArtist, { status: 201 });
   } catch (error) {
-    console.error("Error creating artist:", error);
-    return NextResponse.json({ error: "Erreur serveur lors de la création" }, { status: 500 });
+    return serverError(error, "Erreur serveur lors de la création");
   }
 }
 
@@ -33,8 +46,7 @@ export async function PUT(req: NextRequest) {
     }
     return NextResponse.json(updated);
   } catch (error) {
-    console.error("Error updating artist:", error);
-    return NextResponse.json({ error: "Erreur serveur lors de la mise à jour" }, { status: 500 });
+    return serverError(error, "Erreur serveur lors de la mise à jour");
   }
 }
 

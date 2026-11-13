@@ -55,6 +55,19 @@ function loadImage(file: File): Promise<HTMLImageElement> {
   });
 }
 
+/**
+ * Natural pixel dimensions of an image file, read in the
+ * browser. Used to store the real aspect ratio of a new
+ * artwork instead of forcing 1.0. Throws when the file cannot
+ * be read as an image; callers treat that as best-effort.
+ */
+export async function measureImageDimensions(
+  file: File
+): Promise<{ width: number; height: number }> {
+  const image = await loadImage(file);
+  return { width: image.naturalWidth, height: image.naturalHeight };
+}
+
 function canvasToBlob(
   canvas: HTMLCanvasElement,
   quality: number

@@ -6,6 +6,7 @@ import { Artist, Artwork } from "@/types/artemis";
 import { Plus, Edit2, Trash2, X, Upload, Users, Palette } from "lucide-react";
 import { ConfirmModal } from "@/components/admin/confirm-modal";
 import { uploadImage } from "@/lib/image-upload";
+import { slugify } from "@/lib/slugify";
 
 interface ArtistsManagerProps {
   initialArtists: Artist[];
@@ -72,12 +73,7 @@ export function ArtistsManager({ initialArtists, artworks }: ArtistsManagerProps
   };
 
   const handleNameChange = (name: string) => {
-    const slug = name
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]/g, "-")
-      .replace(/-+/g, "-");
+    const slug = slugify(name);
 
     setFormData((prev) => ({
       ...prev,
@@ -116,7 +112,7 @@ export function ArtistsManager({ initialArtists, artworks }: ArtistsManagerProps
     try {
       const payload = {
         name: formData.name,
-        slug: formData.slug || formData.name.toLowerCase().replace(/\s+/g, "-"),
+        slug: slugify(formData.slug) || slugify(formData.name) || "artiste",
         nationality: formData.nationality,
         city: formData.city,
         birthYear: Number(formData.birthYear) || undefined,
@@ -132,10 +128,12 @@ export function ArtistsManager({ initialArtists, artworks }: ArtistsManagerProps
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id: editingArtist.id, ...payload }),
         });
-        if (res.ok) {
-          const updated = await res.json();
-          setArtists((prev) => prev.map((a) => (a.id === updated.id ? updated : a)));
+        const json = await res.json().catch(() => null);
+        if (res.ok && json) {
+          setArtists((prev) => prev.map((a) => (a.id === json.id ? json : a)));
           setIsModalOpen(false);
+        } else {
+          alert(json?.error || "Erreur lors de l'enregistrement");
         }
       } else {
         const res = await fetch("/api/artists", {
@@ -143,10 +141,12 @@ export function ArtistsManager({ initialArtists, artworks }: ArtistsManagerProps
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-        if (res.ok) {
-          const created = await res.json();
-          setArtists((prev) => [...prev, created]);
+        const json = await res.json().catch(() => null);
+        if (res.ok && json) {
+          setArtists((prev) => [...prev, json]);
           setIsModalOpen(false);
+        } else {
+          alert(json?.error || "Erreur lors de l'enregistrement");
         }
       }
     } catch (err) {
@@ -167,9 +167,13 @@ export function ArtistsManager({ initialArtists, artworks }: ArtistsManagerProps
       if (res.ok) {
         setArtists((prev) => prev.filter((a) => a.id !== artistToDelete.id));
         setArtistToDelete(null);
+      } else {
+        const json = await res.json().catch(() => null);
+        alert(json?.error || "Erreur lors de la suppression");
       }
     } catch (err) {
       console.error(err);
+      alert("Erreur lors de la suppression");
     } finally {
       setDeleting(false);
     }

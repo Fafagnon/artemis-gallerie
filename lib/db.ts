@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { Artist, Artwork, GalleryConfig, ContactMessage } from "@/types/artemis";
 import { supabase } from "@/lib/supabase";
+import { slugify } from "@/lib/slugify";
 
 const DATA_FILE = path.join(process.cwd(), "data", "artemis-data.json");
 
@@ -44,6 +45,76 @@ function writeLocalStore(data: ArtemisStore): void {
   } catch (error) {
     console.error("Error writing local artemis store:", error);
   }
+}
+
+// In production the deployed filesystem is read-only, so the
+// local JSON store can never persist a write there. Writes must
+// therefore fail loudly in production instead of pretending the
+// local fallback saved them; the fallback stays for development.
+const isProduction = process.env.NODE_ENV === "production";
+
+/** Database failure carrying a user-facing French message. */
+export class DbOperationError extends Error {}
+
+function friendlyDbError(
+  error: unknown,
+  kind: "artwork" | "artist",
+  action: "creation" | "update"
+): DbOperationError {
+  const code = (error as { code?: string } | null)?.code;
+  if (code === "23505") {
+    return new DbOperationError(
+      kind === "artwork"
+        ? "Une œuvre avec ce titre existe déjà. Modifiez le titre puis réessayez."
+        : "Un artiste avec ce nom existe déjà. Modifiez le nom puis réessayez."
+    );
+  }
+  if (code === "23503") {
+    return new DbOperationError(
+      "L'artiste associé est introuvable. Choisissez un artiste existant."
+    );
+  }
+  if (code === "23502") {
+    return new DbOperationError("Un champ obligatoire est manquant.");
+  }
+  return new DbOperationError(
+    action === "creation"
+      ? "L'enregistrement a échoué. Réessayez."
+      : "La mise à jour a échoué. Réessayez."
+  );
+}
+
+/** PostgREST "no rows" error: the row does not exist in Supabase. */
+function isNotFoundError(error: unknown): boolean {
+  return (error as { code?: string } | null)?.code === "PGRST116";
+}
+
+/**
+ * First free slug for a table: the base slug, or base-2, base-3
+ * and so on. Slugs are read from Supabase when reachable, from
+ * the local store otherwise (development).
+ */
+async function ensureUniqueSlug(
+  table: "artworks" | "artists",
+  base: string
+): Promise<string> {
+  const taken = new Set<string>();
+  try {
+    const { data, error } = await supabase.from(table).select("slug");
+    if (!error && data) {
+      for (const row of data as { slug: string }[]) taken.add(row.slug);
+    } else {
+      throw new Error("slug list unavailable");
+    }
+  } catch {
+    const store = readLocalStore();
+    const rows = table === "artworks" ? store.artworks : store.artists;
+    for (const row of rows) taken.add(row.slug);
+  }
+  if (!taken.has(base)) return base;
+  let suffix = 2;
+  while (taken.has(`${base}-${suffix}`)) suffix++;
+  return `${base}-${suffix}`;
 }
 
 // Helpers to map Supabase rows to TypeScript types
@@ -142,9 +213,14 @@ export async function createArtist(
 ): Promise<Artist> {
   const id = `artist-${Date.now()}`;
   const now = new Date().toISOString();
+  const slug = await ensureUniqueSlug(
+    "artists",
+    slugify(data.slug || data.name) || "artiste"
+  );
   const newArtist: Artist = {
     ...data,
     id,
+    slug,
     createdAt: now,
     updatedAt: now,
   };
@@ -179,11 +255,16 @@ export async function createArtist(
       writeLocalStore(store);
       return mapArtistRow(supaData);
     }
+    console.error("Supabase createArtist error:", error);
+    if (isProduction) throw friendlyDbError(error, "artist", "creation");
   } catch (err) {
-    console.warn("Supabase createArtist error, saving to local store:", err);
+    if (err instanceof DbOperationError) throw err;
+    console.error("Supabase createArtist exception:", err);
+    if (isProduction) throw friendlyDbError(err, "artist", "creation");
   }
 
-  // Fallback to local store
+  // Fallback to local store (development only: in production the
+  // error above is thrown instead of pretending success).
   const store = readLocalStore();
   store.artists.push(newArtist);
   writeLocalStore(store);
@@ -197,7 +278,10 @@ export async function updateArtist(
   try {
     const payload: any = { updated_at: new Date().toISOString() };
     if (data.name !== undefined) payload.name = data.name;
-    if (data.slug !== undefined) payload.slug = data.slug;
+    if (data.slug !== undefined) {
+      const cleanSlug = slugify(data.slug);
+      if (cleanSlug) payload.slug = cleanSlug;
+    }
     if (data.nationality !== undefined) payload.nationality = data.nationality;
     if (data.city !== undefined) payload.city = data.city;
     if (data.birthYear !== undefined) payload.birth_year = data.birthYear;
@@ -226,8 +310,19 @@ export async function updateArtist(
       }
       return updated;
     }
+    if (isNotFoundError(error)) {
+      // No such row in Supabase: in production that is a 404,
+      // never a silent local edit. In development, try the
+      // local store below.
+      if (isProduction) return null;
+    } else {
+      console.error("Supabase updateArtist error:", error);
+      if (isProduction) throw friendlyDbError(error, "artist", "update");
+    }
   } catch (err) {
-    console.warn("Supabase updateArtist error, updating local store:", err);
+    if (err instanceof DbOperationError) throw err;
+    console.error("Supabase updateArtist exception:", err);
+    if (isProduction) throw friendlyDbError(err, "artist", "update");
   }
 
   const store = readLocalStore();
@@ -300,9 +395,14 @@ export async function createArtwork(
 ): Promise<Artwork> {
   const id = `work-${Date.now()}`;
   const now = new Date().toISOString();
+  const slug = await ensureUniqueSlug(
+    "artworks",
+    slugify(data.slug || data.title?.fr || "") || "oeuvre"
+  );
   const newArtwork: Artwork = {
     ...data,
     id,
+    slug,
     createdAt: now,
     updatedAt: now,
   };
@@ -341,10 +441,16 @@ export async function createArtwork(
       writeLocalStore(store);
       return created;
     }
+    console.error("Supabase createArtwork error:", error);
+    if (isProduction) throw friendlyDbError(error, "artwork", "creation");
   } catch (err) {
-    console.warn("Supabase createArtwork error, saving locally:", err);
+    if (err instanceof DbOperationError) throw err;
+    console.error("Supabase createArtwork exception:", err);
+    if (isProduction) throw friendlyDbError(err, "artwork", "creation");
   }
 
+  // Fallback to local store (development only: in production the
+  // error above is thrown instead of pretending success).
   const store = readLocalStore();
   store.artworks.push(newArtwork);
   writeLocalStore(store);
@@ -356,6 +462,8 @@ export async function updateArtwork(
   data: Partial<Artwork>
 ): Promise<Artwork | null> {
   try {
+    // The slug is set at creation and never changed by an edit:
+    // editing a title must not break the artwork's public URL.
     const payload: any = { updated_at: new Date().toISOString() };
     if (data.title?.fr !== undefined) payload.title_fr = data.title.fr;
     if (data.title?.en !== undefined) payload.title_en = data.title.en;
@@ -392,8 +500,19 @@ export async function updateArtwork(
       }
       return updated;
     }
+    if (isNotFoundError(error)) {
+      // No such row in Supabase: in production that is a 404,
+      // never a silent local edit. In development, try the
+      // local store below.
+      if (isProduction) return null;
+    } else {
+      console.error("Supabase updateArtwork error:", error);
+      if (isProduction) throw friendlyDbError(error, "artwork", "update");
+    }
   } catch (err) {
-    console.warn("Supabase updateArtwork error, updating locally:", err);
+    if (err instanceof DbOperationError) throw err;
+    console.error("Supabase updateArtwork exception:", err);
+    if (isProduction) throw friendlyDbError(err, "artwork", "update");
   }
 
   const store = readLocalStore();
