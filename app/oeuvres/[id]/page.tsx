@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getArtworks, getArtworkById, getArtists, getGalleryConfig } from "@/lib/db";
+import { truncateForMeta } from "@/lib/seo";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { ArtworkDetailClient } from "./artwork-detail-client";
@@ -8,6 +10,32 @@ export const revalidate = 0;
 
 interface PageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const artwork = await getArtworkById(id);
+  if (!artwork) return {};
+  const artists = await getArtists();
+  const artist = artists.find((a) => a.id === artwork.artistId);
+  const artistName = artist?.name ?? "Artemis Galerie";
+  const url = `/oeuvres/${artwork.slug || artwork.id}`;
+  const title = `${artwork.title.fr} – ${artistName} | Artemis Galerie`;
+  const description = artwork.description?.fr
+    ? truncateForMeta(artwork.description.fr, 160)
+    : `${artwork.title.fr}, ${artwork.medium.fr}, ${artwork.year}, par ${artistName}. Œuvre originale exposée à Artemis Galerie, Lomé, Togo.`;
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      images: [{ url: artwork.image, alt: `${artwork.title.fr} par ${artistName}` }],
+      type: "website",
+    },
+  };
 }
 
 export async function generateStaticParams() {

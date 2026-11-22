@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Archivo, Newsreader } from "next/font/google";
 import "@/styles/globals.css";
 import { LanguageProvider } from "@/context/language-context";
+import { GALLERY } from "@/lib/seo";
 
 const archivo = Archivo({
   subsets: ["latin"],
@@ -47,22 +48,21 @@ export const metadata: Metadata = {
   },
 };
 
-// Données structurées de la galerie (valeurs vérifiées sur le site en
-// ligne : adresse, horaires, téléphone, e-mail et réseaux sociaux).
+// Données structurées de la galerie (infos centralisées dans lib/seo.ts,
+// partagées avec llms.txt).
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ArtGallery",
-  name: "Artemis Galerie",
-  url: "https://www.gallerie-artemis.com/",
-  description:
-    "Artemis Galerie, art contemporain à Lomé, Togo. Catalogue des œuvres originales d'artistes contemporains (LAKA, AGBELESSESSI Dela) et informations de visite.",
-  telephone: "+228 70 21 11 11",
-  email: "galerieartemis@gmail.com",
+  name: GALLERY.name,
+  url: GALLERY.url,
+  description: GALLERY.description,
+  telephone: GALLERY.telephone,
+  email: GALLERY.email,
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Rue de Kpendjal, Forever, non loin de l'ex LCF",
-    addressLocality: "Lomé",
-    addressCountry: "TG",
+    streetAddress: GALLERY.streetAddress,
+    addressLocality: GALLERY.locality,
+    addressCountry: GALLERY.country,
   },
   openingHoursSpecification: [
     {
@@ -78,11 +78,7 @@ const jsonLd = {
       closes: "19:00",
     },
   ],
-  sameAs: [
-    "https://www.instagram.com/artemisgalerietg/",
-    "https://www.facebook.com/p/Artemis-Galerie-61569428815346/",
-    "https://www.tiktok.com/@artemis.galerie",
-  ],
+  sameAs: [GALLERY.instagram, GALLERY.facebook, GALLERY.tiktok],
 };
 
 export default function RootLayout({
