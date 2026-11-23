@@ -15,12 +15,10 @@ export default async function HomePage() {
     getGalleryConfig(),
   ]);
 
-  const heroArtworks = artworks.filter((w) => w.featuredInHero);
-
   return (
     <main className="min-h-screen">
       <Navigation variant="transparent" />
-      <Hero featuredArtworks={heroArtworks.length > 0 ? heroArtworks : artworks.slice(0, 3)} />
+      <Hero />
       <ArtistsSpotlight artists={artists} artworks={artworks} />
       <CollectionWall initialArtworks={artworks} artists={artists} />
       <VisitSection config={galleryConfig} />
